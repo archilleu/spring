@@ -1,0 +1,59 @@
+package com.lr.ioc.beans.factory;
+
+import com.lr.ioc.beans.BeanController;
+import com.lr.ioc.beans.BeanDefinition;
+import com.lr.ioc.beans.PropertyValue;
+import com.lr.ioc.beans.PropertyValues;
+import com.lr.ioc.beans.io.ResourceLoader;
+import com.lr.ioc.beans.json.JsonBeanDefinitionReader;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Map;
+
+public class BeanFactoryTest {
+
+    @Test
+    public void test() throws Exception {
+        final String BEAN_NAME = "beanController";
+        // 1.init
+        BeanFactory beanFactory = new AutowireCapableBeanFactory();
+
+        // 2.inject
+        BeanDefinition beanDefinition = new BeanDefinition();
+        beanDefinition.setBeanClassName("com.lr.ioc.beans.BeanController");
+
+        // 3.set property
+        PropertyValues propertyValues = new PropertyValues();
+        propertyValues.addPropertyValue(new PropertyValue("p1", "hello world"));
+        propertyValues.addPropertyValue(new PropertyValue("p2", 1));
+        beanDefinition.setPropertyValues(propertyValues);
+
+        // 4.register bean
+        ((AutowireCapableBeanFactory)beanFactory).registerBeanDefinition(BEAN_NAME, beanDefinition);
+
+        // 3.get bean
+        BeanController beanController = (BeanController) beanFactory.getBean(BEAN_NAME);
+        Assert.assertEquals(beanController.toString(), BeanController.MESSAGE);
+    }
+
+    @Test
+    public void testInstantiate() throws Exception {
+        // 1.读取配置文件
+        JsonBeanDefinitionReader jsonBeanDefinitionReader = new JsonBeanDefinitionReader(new ResourceLoader());
+        jsonBeanDefinitionReader.loadBeanDefinitions("bean.json");
+
+        // 2.初始化BeanFactory并注册beans
+        AutowireCapableBeanFactory beanFactory = new AutowireCapableBeanFactory();
+        for(Map.Entry<String, BeanDefinition> beanDefinitionEntry : jsonBeanDefinitionReader.getRegistry().entrySet()) {
+            beanFactory.registerBeanDefinition(beanDefinitionEntry.getKey(), beanDefinitionEntry.getValue());
+        }
+
+        // 3.初始化bean
+        beanFactory.preInstantiateSingletons();
+
+        // 4.获取bean
+        BeanController beanController = (BeanController) beanFactory.getBean("beanController");
+        Assert.assertEquals(beanController.toString(), BeanController.MESSAGE);
+    }
+}

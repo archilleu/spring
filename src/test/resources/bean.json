@@ -1,0 +1,32 @@
+{
+  "beans": [
+    {
+      "name": "refBeanController",
+      "class": "com.lr.ioc.RefBeanController",
+      "property": [
+        {
+          "name": "name",
+          "value": "hello world"
+        }
+      ]
+    },
+    {
+      "name": "beanController",
+      "class": "com.lr.ioc.BeanController",
+      "property": [
+        {
+          "name": "p1",
+          "value": "hello world"
+        },
+        {
+          "name": "p2",
+          "value": 1
+        },
+        {
+          "name": "ref",
+          "ref": "refBeanController"
+        }
+      ]
+    }
+  ]
+}
