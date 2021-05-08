@@ -1,0 +1,30 @@
+{
+  "beans": [
+    {
+      "id": "outputService",
+      "class": "com.lr.ioc.beans.OutputServiceImpl"
+    },
+    {
+      "id": "beanService",
+      "class": "com.lr.ioc.beans.BeanServiceImpl",
+      "property": [
+        {
+          "name": "p1",
+          "value": "hello world"
+        },
+        {
+          "name": "p2",
+          "value": 1
+        },
+        {
+          "name": "outputService",
+          "ref": "outputService"
+        }
+      ]
+    },
+    {
+      "id": "beanInitializeLogger",
+      "class": "com.lr.ioc.beans.BeanInitializeLogger"
+    }
+  ]
+}

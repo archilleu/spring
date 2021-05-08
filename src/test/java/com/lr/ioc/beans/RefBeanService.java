@@ -3,7 +3,7 @@ package com.lr.ioc.beans;
 import lombok.Data;
 
 @Data
-public class RefBeanController {
+public class RefBeanService {
 
     private String name;
 

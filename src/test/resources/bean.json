@@ -1,18 +1,14 @@
 {
   "beans": [
     {
-      "name": "refBeanController",
-      "class": "com.lr.ioc.RefBeanController",
+      "id": "outputService",
+      "class": "com.lr.ioc.beans.OutputServiceImpl",
       "property": [
-        {
-          "name": "name",
-          "value": "hello world"
-        }
       ]
     },
     {
-      "name": "beanController",
-      "class": "com.lr.ioc.BeanController",
+      "id": "beanService",
+      "class": "com.lr.ioc.beans.BeanServiceImpl",
       "property": [
         {
           "name": "p1",
@@ -23,8 +19,30 @@
           "value": 1
         },
         {
-          "name": "ref",
-          "ref": "refBeanController"
+          "name": "outputService",
+          "ref": "outputService"
+        }
+      ]
+    },
+    {
+      "id": "timeInterceptor",
+      "class": "com.lr.ioc.aop.proxy.TimerInterceptor"
+    },
+    {
+      "id": "autoProxyCreator",
+      "class": "com.lr.ioc.aop.aspectj.AspectJAwareAdvisorAutoProxyCreator"
+    },
+    {
+      "id": "aspectjAspect",
+      "class": "com.lr.ioc.aop.aspectj.AspectJExpressionPointcutAdvisor",
+      "property": [
+        {
+          "name": "advice",
+          "ref": "timeInterceptor"
+        },
+        {
+          "name": "expression",
+          "value": "execution(* com.lr.ioc.beans.*.*(..))"
         }
       ]
     }

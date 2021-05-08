@@ -8,7 +8,7 @@ import com.lr.ioc.beans.BeanReference;
 import com.lr.ioc.beans.PropertyValue;
 import com.lr.ioc.beans.io.ResourceLoader;
 
-import java.io.*;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -27,16 +27,16 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
         registerBeanDefinitions(jsonObject);
     }
 
-    private void registerBeanDefinitions(JSONObject root) {
+    private void registerBeanDefinitions(JSONObject root) throws ClassNotFoundException {
         JSONArray beans = root.getJSONArray(RESERVE_KEYWORD_BEANS);
-        if(null != beans) {
+        if (null != beans) {
             processBeanDefinition(beans);
         }
 
         return;
     }
 
-    private void processBeanDefinition(JSONArray beans) {
+    private void processBeanDefinition(JSONArray beans) throws ClassNotFoundException {
         Iterator<Object> iterator = beans.iterator();
         while (iterator.hasNext()) {
             JSONObject item = (JSONObject) iterator.next();
@@ -45,7 +45,7 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
             BeanDefinition beanDefinition = new BeanDefinition();
             processBeanDefinitionProperty(properties, beanDefinition);
 
-            String name = item.getString(RESERVE_KEYWORD_BEAN_NAME);
+            String name = item.getString(RESERVE_KEYWORD_BEAN_ID);
             String clazz = item.getString(RESERVE_KEYWORD_BEAN_CLASS);
             beanDefinition.setBeanClassName(clazz);
             super.getRegistry().put(name, beanDefinition);
@@ -53,19 +53,23 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
     }
 
     private void processBeanDefinitionProperty(JSONArray properties, BeanDefinition beanDefinition) {
+        if (null == properties) {
+            return;
+        }
+
         Iterator<Object> iterator = properties.iterator();
         while (iterator.hasNext()) {
             JSONObject item = (JSONObject) iterator.next();
             String name = item.getString(RESERVE_KEYWORD_BEAN_PROPERTY_NAME);
             Object value = item.get(RESERVE_KEYWORD_BEAN_PROPERTY_VALUE);
             // 判断属性值是否为空
-            if(value != null) {
+            if (value != null) {
                 // 1.不为空,排除是ref的可能
                 beanDefinition.getPropertyValues().addPropertyValue(new PropertyValue(name, value));
             } else {
                 // 1.为空,不是是ref
                 String ref = item.getString(RESERVE_KEYWORD_BEAN_PROPERTY_REF);
-                if(ref == null) {
+                if (ref == null) {
                     throw new IllegalArgumentException("Configuration problem: <property> element for property"
                             + name + " must specify a ref or value");
                 }
@@ -78,7 +82,7 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
     }
 
     private static final String RESERVE_KEYWORD_BEANS = "beans";
-    private static final String RESERVE_KEYWORD_BEAN_NAME = "name";
+    private static final String RESERVE_KEYWORD_BEAN_ID = "id";
     private static final String RESERVE_KEYWORD_BEAN_CLASS = "class";
     private static final String RESERVE_KEYWORD_BEAN_PROPERTY = "property";
     private static final String RESERVE_KEYWORD_BEAN_PROPERTY_NAME = "name";

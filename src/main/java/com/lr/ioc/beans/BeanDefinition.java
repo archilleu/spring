@@ -19,13 +19,9 @@ public class BeanDefinition {
 
     private PropertyValues propertyValues = new PropertyValues();
 
-    public void setBeanClassName(String beanClassName) {
-        try {
-            this.beanClass = Class.forName(beanClassName);
-            this.beanClassName = beanClassName;
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        }
+    public void setBeanClassName(String beanClassName) throws ClassNotFoundException {
+        this.beanClass = Class.forName(beanClassName);
+        this.beanClassName = beanClassName;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.lr.ioc.aop;
+package com.lr.ioc.aop.proxy;
 
 /**
  * AOP代理

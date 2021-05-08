@@ -1,9 +1,10 @@
 package com.lr.ioc.beans;
 
-public class BeanController {
+public class BeanServiceImpl implements BeanService {
 
     public static final String MESSAGE = "first bean";
 
+    @Override
     public void helloWorld() {
         System.out.println("hello world");
     }
@@ -17,5 +18,7 @@ public class BeanController {
 
     private Integer p2;
 
-    private RefBeanController ref;
+    private RefBeanService ref;
+
+    private OutputService outputService;
 }

@@ -1,6 +1,6 @@
 package com.lr.ioc.beans.factory;
 
-import com.lr.ioc.beans.BeanController;
+import com.lr.ioc.beans.BeanServiceImpl;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.PropertyValue;
 import com.lr.ioc.beans.PropertyValues;
@@ -15,13 +15,12 @@ public class BeanFactoryTest {
 
     @Test
     public void test() throws Exception {
-        final String BEAN_NAME = "beanController";
         // 1.init
         BeanFactory beanFactory = new AutowireCapableBeanFactory();
 
         // 2.inject
         BeanDefinition beanDefinition = new BeanDefinition();
-        beanDefinition.setBeanClassName("com.lr.ioc.beans.BeanController");
+        beanDefinition.setBeanClassName("com.lr.ioc.beans.BeanServiceImpl");
 
         // 3.set property
         PropertyValues propertyValues = new PropertyValues();
@@ -33,8 +32,8 @@ public class BeanFactoryTest {
         ((AutowireCapableBeanFactory)beanFactory).registerBeanDefinition(BEAN_NAME, beanDefinition);
 
         // 3.get bean
-        BeanController beanController = (BeanController) beanFactory.getBean(BEAN_NAME);
-        Assert.assertEquals(beanController.toString(), BeanController.MESSAGE);
+        BeanServiceImpl beanController = (BeanServiceImpl) beanFactory.getBean(BEAN_NAME);
+        Assert.assertEquals(beanController.toString(), BeanServiceImpl.MESSAGE);
     }
 
     @Test
@@ -53,7 +52,9 @@ public class BeanFactoryTest {
         beanFactory.preInstantiateSingletons();
 
         // 4.获取bean
-        BeanController beanController = (BeanController) beanFactory.getBean("beanController");
-        Assert.assertEquals(beanController.toString(), BeanController.MESSAGE);
+        BeanServiceImpl beanController = (BeanServiceImpl) beanFactory.getBean(BEAN_NAME);
+        Assert.assertEquals(beanController.toString(), BeanServiceImpl.MESSAGE);
     }
+
+    final String BEAN_NAME = "beanService";
 }

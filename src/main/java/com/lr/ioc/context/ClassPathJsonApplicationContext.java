@@ -20,21 +20,21 @@ public class ClassPathJsonApplicationContext extends AbstractApplicationContext 
         this(configLocation, new AutowireCapableBeanFactory());
     }
 
-    public ClassPathJsonApplicationContext(String configLocation, AbstractBeanFactory beanFactory)throws Exception {
+    public ClassPathJsonApplicationContext(String configLocation, AbstractBeanFactory beanFactory) throws Exception {
         super(beanFactory);
         this.configLocation = configLocation;
         refresh();
     }
 
     @Override
-    public void refresh() throws Exception {
+    protected void loadBeanDefinitions(AbstractBeanFactory beanFactory) throws Exception {
         JsonBeanDefinitionReader jsonBeanDefinitionReader = new JsonBeanDefinitionReader(new ResourceLoader());
 
         // 1.读取配置文件
         jsonBeanDefinitionReader.loadBeanDefinitions(this.configLocation);
 
         // 2.初始化BeanFactory并注册beans
-        for(Map.Entry<String, BeanDefinition> beanDefinitionEntry : jsonBeanDefinitionReader.getRegistry().entrySet()) {
+        for (Map.Entry<String, BeanDefinition> beanDefinitionEntry : jsonBeanDefinitionReader.getRegistry().entrySet()) {
             super.beanFactory.registerBeanDefinition(beanDefinitionEntry.getKey(), beanDefinitionEntry.getValue());
         }
     }

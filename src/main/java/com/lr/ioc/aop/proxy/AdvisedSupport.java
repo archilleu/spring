@@ -1,5 +1,6 @@
-package com.lr.ioc.aop;
+package com.lr.ioc.aop.proxy;
 
+import com.lr.ioc.aop.pointcut.MethodMatcher;
 import lombok.Data;
 import org.aopalliance.intercept.MethodInterceptor;
 
@@ -14,4 +15,5 @@ public class AdvisedSupport {
 
     private MethodInterceptor methodInterceptor;
 
+    private MethodMatcher methodMatcher;
 }
