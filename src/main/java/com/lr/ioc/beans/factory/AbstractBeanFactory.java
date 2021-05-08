@@ -24,6 +24,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
             throw new IllegalArgumentException(("No bean named " + name + " is defined"));
         }
 
+        // 单例
         Object bean = beanDefinition.getBean();
         if (bean == null) {
             bean = doCreateBean(beanDefinition);
@@ -31,7 +32,14 @@ public abstract class AbstractBeanFactory implements BeanFactory {
             beanDefinition.setBean(bean);
         }
 
+        //TODO:添加创建多例逻辑
+
         return bean;
+    }
+
+    @Override
+    public <T> T getBean(String name, Class<T> clazz) throws Exception {
+        return (T) getBean(name);
     }
 
     protected Object initializeBean(Object bean, String beanName) throws Exception {
