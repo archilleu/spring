@@ -2,9 +2,9 @@ package com.lr.ioc.beans.factory;
 
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.BeanPostProcessor;
+import com.lr.ioc.constant.enums.ScopeEnum;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,15 +24,19 @@ public abstract class AbstractBeanFactory implements BeanFactory {
             throw new IllegalArgumentException(("No bean named " + name + " is defined"));
         }
 
-        // 单例
-        Object bean = beanDefinition.getBean();
-        if (bean == null) {
+        Object bean;
+        final String scope = beanDefinition.getScope();
+        if (ScopeEnum.PROTOTYPE.getCode().equals(scope)) {
             bean = doCreateBean(beanDefinition);
             bean = initializeBean(bean, name);
-            beanDefinition.setBean(bean);
+        } else {
+            bean = beanDefinition.getBean();
+            if (bean == null) {
+                bean = doCreateBean(beanDefinition);
+                bean = initializeBean(bean, name);
+                beanDefinition.setBean(bean);
+            }
         }
-
-        //TODO:添加创建多例逻辑
 
         return bean;
     }
@@ -76,9 +80,12 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
     // 预加载bean
     public void preInstantiateSingletons() throws Exception {
-        for (Iterator it = this.beanDefinitionNames.iterator(); it.hasNext(); ) {
-            String beanName = (String) it.next();
-            getBean(beanName);
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()) {
+            if (entry.getValue().isLazyInit()) {
+                continue;
+            } else {
+                getBean(entry.getKey());
+            }
         }
     }
 

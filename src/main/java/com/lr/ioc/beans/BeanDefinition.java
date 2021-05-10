@@ -17,6 +17,10 @@ public class BeanDefinition {
 
     private String beanClassName;
 
+    private String scope;
+
+    private boolean lazyInit;
+
     private PropertyValues propertyValues = new PropertyValues();
 
     public void setBeanClassName(String beanClassName) throws ClassNotFoundException {

@@ -1,7 +1,7 @@
 package com.lr.ioc.beans.factory;
 
-import com.lr.ioc.beans.BeanServiceImpl;
 import com.lr.ioc.beans.BeanDefinition;
+import com.lr.ioc.beans.BeanServiceImpl;
 import com.lr.ioc.beans.PropertyValue;
 import com.lr.ioc.beans.PropertyValues;
 import com.lr.ioc.beans.io.ResourceLoader;
@@ -29,11 +29,11 @@ public class BeanFactoryTest {
         beanDefinition.setPropertyValues(propertyValues);
 
         // 4.register bean
-        ((AutowireCapableBeanFactory)beanFactory).registerBeanDefinition(BEAN_NAME, beanDefinition);
+        ((AutowireCapableBeanFactory) beanFactory).registerBeanDefinition(BEAN_NAME, beanDefinition);
 
         // 3.get bean
         BeanServiceImpl beanController = (BeanServiceImpl) beanFactory.getBean(BEAN_NAME);
-        Assert.assertEquals(beanController.toString(), BeanServiceImpl.MESSAGE);
+        Assert.assertEquals(beanController.getMessage(), BeanServiceImpl.MESSAGE);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class BeanFactoryTest {
 
         // 2.初始化BeanFactory并注册beans
         AutowireCapableBeanFactory beanFactory = new AutowireCapableBeanFactory();
-        for(Map.Entry<String, BeanDefinition> beanDefinitionEntry : jsonBeanDefinitionReader.getRegistry().entrySet()) {
+        for (Map.Entry<String, BeanDefinition> beanDefinitionEntry : jsonBeanDefinitionReader.getRegistry().entrySet()) {
             beanFactory.registerBeanDefinition(beanDefinitionEntry.getKey(), beanDefinitionEntry.getValue());
         }
 
@@ -53,7 +53,7 @@ public class BeanFactoryTest {
 
         // 4.获取bean
         BeanServiceImpl beanController = (BeanServiceImpl) beanFactory.getBean(BEAN_NAME);
-        Assert.assertEquals(beanController.toString(), BeanServiceImpl.MESSAGE);
+        Assert.assertEquals(beanController.getMessage(), BeanServiceImpl.MESSAGE);
     }
 
     final String BEAN_NAME = "beanService";

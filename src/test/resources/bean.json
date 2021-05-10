@@ -7,8 +7,34 @@
       ]
     },
     {
+      "id": "outputServiceLazy",
+      "class": "com.lr.ioc.beans.OutputServiceImpl",
+      "lazyInit": true,
+      "property": [
+      ]
+    },
+    {
       "id": "beanService",
       "class": "com.lr.ioc.beans.BeanServiceImpl",
+      "property": [
+        {
+          "name": "p1",
+          "value": "hello world"
+        },
+        {
+          "name": "p2",
+          "value": 1
+        },
+        {
+          "name": "outputService",
+          "ref": "outputService"
+        }
+      ]
+    },
+    {
+      "id": "beanService1",
+      "class": "com.lr.ioc.beans.BeanServiceImpl",
+      "scope": "prototype",
       "property": [
         {
           "name": "p1",

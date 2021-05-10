@@ -27,7 +27,7 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
         registerBeanDefinitions(jsonObject);
     }
 
-    private void registerBeanDefinitions(JSONObject root) throws ClassNotFoundException {
+    private void registerBeanDefinitions(JSONObject root) throws Exception {
         JSONArray beans = root.getJSONArray(RESERVE_KEYWORD_BEANS);
         if (null != beans) {
             processBeanDefinition(beans);
@@ -36,7 +36,7 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
         return;
     }
 
-    private void processBeanDefinition(JSONArray beans) throws ClassNotFoundException {
+    private void processBeanDefinition(JSONArray beans) throws Exception {
         Iterator<Object> iterator = beans.iterator();
         while (iterator.hasNext()) {
             JSONObject item = (JSONObject) iterator.next();
@@ -45,10 +45,16 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
             BeanDefinition beanDefinition = new BeanDefinition();
             processBeanDefinitionProperty(properties, beanDefinition);
 
-            String name = item.getString(RESERVE_KEYWORD_BEAN_ID);
+            String id = item.getString(RESERVE_KEYWORD_BEAN_ID);
             String clazz = item.getString(RESERVE_KEYWORD_BEAN_CLASS);
+            String scope = item.getString(RESERVE_KEYWORD_BEAN_SCOPE);
+            boolean lazyInit = item.getBooleanValue(RESERVE_KEYWORD_BEAN_LAZY_INIT);
             beanDefinition.setBeanClassName(clazz);
-            super.getRegistry().put(name, beanDefinition);
+            beanDefinition.setScope(scope);
+            beanDefinition.setLazyInit(lazyInit);
+            if (null != super.getRegistry().put(id, beanDefinition)) {
+                throw new Exception("id already exists: " + id);
+            }
         }
     }
 
@@ -84,6 +90,8 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
     private static final String RESERVE_KEYWORD_BEANS = "beans";
     private static final String RESERVE_KEYWORD_BEAN_ID = "id";
     private static final String RESERVE_KEYWORD_BEAN_CLASS = "class";
+    private static final String RESERVE_KEYWORD_BEAN_SCOPE = "scope";
+    private static final String RESERVE_KEYWORD_BEAN_LAZY_INIT = "lazyInit";
     private static final String RESERVE_KEYWORD_BEAN_PROPERTY = "property";
     private static final String RESERVE_KEYWORD_BEAN_PROPERTY_NAME = "name";
     private static final String RESERVE_KEYWORD_BEAN_PROPERTY_VALUE = "value";
