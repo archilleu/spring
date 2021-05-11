@@ -13,6 +13,8 @@ public class BeanDefinition {
 
     private Object bean;
 
+    private String id;
+
     private Class beanClass;
 
     private String beanClassName;
