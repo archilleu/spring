@@ -2,6 +2,7 @@ package com.lr.ioc.context;
 
 import com.lr.ioc.beans.BeanPostProcessor;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
+import com.lr.ioc.exception.IocRuntimeException;
 
 import java.util.List;
 
@@ -33,12 +34,12 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     }
 
     @Override
-    public Object getBean(String name) throws Exception {
+    public Object getBean(String name) throws IocRuntimeException {
         return this.beanFactory.getBean(name);
     }
 
     @Override
-    public <T> T getBean(String name, Class<T> clazz) throws Exception {
+    public <T> T getBean(String name, Class<T> clazz) throws IocRuntimeException {
         return this.beanFactory.getBean(name, clazz);
     }
 }

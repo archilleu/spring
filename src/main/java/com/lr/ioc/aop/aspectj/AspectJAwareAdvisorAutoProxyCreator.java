@@ -5,6 +5,7 @@ import com.lr.ioc.aop.proxy.TargetSource;
 import com.lr.ioc.beans.BeanPostProcessor;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
 import com.lr.ioc.beans.factory.BeanFactory;
+import com.lr.ioc.exception.IocRuntimeException;
 import org.aopalliance.intercept.MethodInterceptor;
 
 import java.util.List;
@@ -14,17 +15,17 @@ public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor, B
     private AbstractBeanFactory beanFactory;
 
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws Exception {
+    public void setBeanFactory(BeanFactory beanFactory) throws IocRuntimeException {
         this.beanFactory = (AbstractBeanFactory) beanFactory;
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws Exception {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws IocRuntimeException {
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws Exception {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws IocRuntimeException {
         if (bean instanceof AspectJExpressionPointcutAdvisor) {
             return bean;
         }

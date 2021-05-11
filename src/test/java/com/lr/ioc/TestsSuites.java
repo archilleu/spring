@@ -13,5 +13,5 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({ApplicationContextTest.class, AspectJExpressionPointcutTest.class
         , Cglib2AopProxyTest.class, JdkDynamicAopProxyTest.class, BeanFactoryTest.class
         , JsonBeanDefinitionReaderTest.class})
-public class SysTestsSuites {
+public class TestsSuites {
 }
