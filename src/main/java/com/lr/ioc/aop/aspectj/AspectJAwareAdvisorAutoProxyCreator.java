@@ -38,7 +38,7 @@ public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor, B
 
         // 获取所有切面定义
         List<AspectJExpressionPointcutAdvisor> advisors =
-                beanFactory.getBeansForType(AspectJExpressionPointcutAdvisor.class);
+                beanFactory.getBeans(AspectJExpressionPointcutAdvisor.class);
         for (AspectJExpressionPointcutAdvisor advisor : advisors) {
             // 找到第一个符合切面的对象
             if (advisor.getPointcut().getClassFilter().matches(bean.getClass())) {

@@ -7,6 +7,7 @@ import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.BeanReference;
 import com.lr.ioc.beans.PropertyValue;
 import com.lr.ioc.beans.io.ResourceLoader;
+import com.lr.ioc.exception.IocRuntimeException;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -20,14 +21,18 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
     }
 
     @Override
-    public void loadBeanDefinitions(String location) throws Exception {
-        File file = super.getResourceLoader().getResource(location).getFile();
-        JSONObject jsonObject = JSONObject.parseObject(new String(Files.readAllBytes(Paths.get(file.toURI()))));
+    public void loadBeanDefinitions(String location) throws IocRuntimeException {
+        try {
+            File file = super.getResourceLoader().getResource(location).getFile();
+            JSONObject jsonObject = JSONObject.parseObject(new String(Files.readAllBytes(Paths.get(file.toURI()))));
 
-        registerBeanDefinitions(jsonObject);
+            registerBeanDefinitions(jsonObject);
+        } catch (Exception ex) {
+            throw new IocRuntimeException(ex);
+        }
     }
 
-    private void registerBeanDefinitions(JSONObject root) throws Exception {
+    private void registerBeanDefinitions(JSONObject root) throws IocRuntimeException {
         JSONArray beans = root.getJSONArray(RESERVE_KEYWORD_BEANS);
         if (null != beans) {
             processBeanDefinition(beans);
@@ -36,7 +41,7 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
         return;
     }
 
-    private void processBeanDefinition(JSONArray beans) throws Exception {
+    private void processBeanDefinition(JSONArray beans) throws IocRuntimeException {
         Iterator<Object> iterator = beans.iterator();
         while (iterator.hasNext()) {
             JSONObject item = (JSONObject) iterator.next();
@@ -49,11 +54,15 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
             String clazz = item.getString(RESERVE_KEYWORD_BEAN_CLASS);
             String scope = item.getString(RESERVE_KEYWORD_BEAN_SCOPE);
             boolean lazyInit = item.getBooleanValue(RESERVE_KEYWORD_BEAN_LAZY_INIT);
-            beanDefinition.setBeanClassName(clazz);
+            try {
+                beanDefinition.setBeanClassName(clazz);
+            } catch (ClassNotFoundException e) {
+                throw new IocRuntimeException(e);
+            }
             beanDefinition.setScope(scope);
             beanDefinition.setLazyInit(lazyInit);
             if (null != super.getRegistry().put(id, beanDefinition)) {
-                throw new Exception("id already exists: " + id);
+                throw new IocRuntimeException("id already exists: " + id);
             }
         }
     }

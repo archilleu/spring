@@ -6,6 +6,7 @@ import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
 import com.lr.ioc.beans.factory.AutowireCapableBeanFactory;
 import com.lr.ioc.constant.enums.ScopeEnum;
+import com.lr.ioc.exception.IocRuntimeException;
 import com.lr.ioc.support.name.BeanNameStrategy;
 import com.lr.ioc.support.name.impl.DefaultBeanNameStrategy;
 import lombok.Setter;
@@ -18,11 +19,11 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     @Setter
     private BeanNameStrategy beanNameStrategy = new DefaultBeanNameStrategy();
 
-    public AnnotationApplicationContext(Class... configClasses) throws Exception {
+    public AnnotationApplicationContext(Class... configClasses) throws IocRuntimeException {
         this(new AutowireCapableBeanFactory(), configClasses);
     }
 
-    public AnnotationApplicationContext(AbstractBeanFactory beanFactory, Class... configClasses) throws Exception {
+    public AnnotationApplicationContext(AbstractBeanFactory beanFactory, Class... configClasses) {
         super(beanFactory);
 
         this.configClasses = configClasses;
@@ -31,12 +32,16 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     }
 
     @Override
-    protected void loadBeanDefinitions(AbstractBeanFactory beanFactory) throws Exception {
+    protected void loadBeanDefinitions(AbstractBeanFactory beanFactory) {
         for (Class clazz : configClasses) {
             if (clazz.isAnnotationPresent(Configuration.class)) {
                 BeanDefinition beanDefinition = new BeanDefinition();
                 processBeanDefinitionProperty(null, beanDefinition);
-                beanDefinition.setBeanClassName(clazz.getName());
+                try {
+                    beanDefinition.setBeanClassName(clazz.getName());
+                } catch (ClassNotFoundException e) {
+                    throw new IocRuntimeException(e);
+                }
                 beanDefinition.setScope(ScopeEnum.SINGLETON.getCode());
                 beanDefinition.setLazyInit(false);
 

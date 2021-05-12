@@ -14,23 +14,32 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         this.beanFactory = beanFactory;
     }
 
-    public void refresh() throws Exception {
+    public void refresh() {
         loadBeanDefinitions(beanFactory);
         registerBeanPostProcessors(beanFactory);
         onRefresh();
     }
 
-    protected abstract void loadBeanDefinitions(AbstractBeanFactory beanFactory) throws Exception;
+    protected abstract void loadBeanDefinitions(AbstractBeanFactory beanFactory);
 
-    protected void registerBeanPostProcessors(AbstractBeanFactory beanFactory) throws Exception {
-        List beanPostProcessors = beanFactory.getBeansForType(BeanPostProcessor.class);
+    protected void registerBeanPostProcessors(AbstractBeanFactory beanFactory) {
+        List<BeanPostProcessor> beanPostProcessors = beanFactory.getBeans(BeanPostProcessor.class);
         for (Object beanPostProcessor : beanPostProcessors) {
             beanFactory.addBeanPostProcessor((BeanPostProcessor) beanPostProcessor);
         }
     }
 
-    protected void onRefresh() throws Exception {
+    protected void onRefresh() {
         beanFactory.preInstantiateSingletons();
+    }
+
+    protected void registerShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+//                AbstractApplicationContext.this.destroy();
+            }
+        });
     }
 
     @Override
@@ -42,4 +51,25 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     public <T> T getBean(String name, Class<T> clazz) throws IocRuntimeException {
         return this.beanFactory.getBean(name, clazz);
     }
+
+    @Override
+    public <T> List<T> getBeans(final Class<T> type) {
+        return this.beanFactory.getBeans(type);
+    }
+
+    @Override
+    public boolean containsBean(final String name) {
+        return this.beanFactory.containsBean(name);
+    }
+
+    @Override
+    public boolean isTypeMatch(final String name, final Class type) {
+        return this.beanFactory.isTypeMatch(name, type);
+    }
+
+    @Override
+    public Class<?> getType(final String name) {
+        return this.beanFactory.getType(name);
+    }
+
 }

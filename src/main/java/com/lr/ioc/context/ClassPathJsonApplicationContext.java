@@ -27,7 +27,7 @@ public class ClassPathJsonApplicationContext extends AbstractApplicationContext 
     }
 
     @Override
-    protected void loadBeanDefinitions(AbstractBeanFactory beanFactory) throws Exception {
+    protected void loadBeanDefinitions(AbstractBeanFactory beanFactory) {
         JsonBeanDefinitionReader jsonBeanDefinitionReader = new JsonBeanDefinitionReader(new ResourceLoader());
 
         // 1.读取配置文件
