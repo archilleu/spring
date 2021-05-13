@@ -4,11 +4,11 @@ import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.BeanPostProcessor;
 import com.lr.ioc.constant.enums.ScopeEnum;
 import com.lr.ioc.exception.IocRuntimeException;
+import com.lr.ioc.support.lifecycle.create.DefaultNewInstanceBean;
 import com.lr.ioc.support.lifecycle.destroy.DefaultPreDestroyBean;
 import com.lr.ioc.support.lifecycle.destroy.DisposableBean;
 import com.lr.ioc.support.lifecycle.init.DefaultPostConstructBean;
 import com.lr.ioc.support.lifecycle.init.InitializingBean;
-import com.lr.ioc.util.ClassUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -115,7 +115,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     }
 
     protected Object createBeanInstance(BeanDefinition beanDefinition) {
-        return ClassUtils.newInstance(beanDefinition.getBeanClass());
+        return DefaultNewInstanceBean.getInstance().newInstance(this, beanDefinition);
     }
 
     protected void applyPropertyValues(Object bean, BeanDefinition mbd) {

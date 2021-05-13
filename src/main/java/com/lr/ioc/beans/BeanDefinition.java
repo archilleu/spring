@@ -3,6 +3,8 @@ package com.lr.ioc.beans;
 import com.lr.ioc.beans.factory.BeanFactory;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * bean定义，保存在{@link BeanFactory}中
  */
@@ -50,6 +52,18 @@ public class BeanDefinition {
      * 对象销毁方法
      */
     private String destroy;
+
+    /**
+     * 对象工厂方法(必须静态、无参、返回对象)
+     */
+    private String factoryMethod;
+
+    /**
+     * 构造器列表
+     *
+     * @since 0.0.6
+     */
+    private List<ConstructorArgDefinition> constructorArgList;
 
     /**
      * 对象属性
