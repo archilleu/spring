@@ -2,7 +2,6 @@ package com.lr.ioc.context;
 
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
-import com.lr.ioc.beans.factory.AutowireCapableBeanFactory;
 import com.lr.ioc.beans.io.ResourceLoader;
 import com.lr.ioc.beans.json.JsonBeanDefinitionReader;
 
@@ -13,11 +12,11 @@ public class ClassPathJsonApplicationContext extends AbstractApplicationContext 
     private String configLocation;
 
     public ClassPathJsonApplicationContext() throws Exception {
-        this(CLASSPATH_JSON_DEFAULT_FILE, new AutowireCapableBeanFactory());
+        this(CLASSPATH_JSON_DEFAULT_FILE, new AbstractBeanFactory());
     }
 
     public ClassPathJsonApplicationContext(String configLocation) throws Exception {
-        this(configLocation, new AutowireCapableBeanFactory());
+        this(configLocation, new AbstractBeanFactory());
     }
 
     public ClassPathJsonApplicationContext(String configLocation, AbstractBeanFactory beanFactory) throws Exception {

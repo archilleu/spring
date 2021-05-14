@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.lr.ioc.annotation.Configuration;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
-import com.lr.ioc.beans.factory.AutowireCapableBeanFactory;
 import com.lr.ioc.constant.enums.ScopeEnum;
 import com.lr.ioc.exception.IocRuntimeException;
 import com.lr.ioc.support.name.BeanNameStrategy;
@@ -20,7 +19,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     private BeanNameStrategy beanNameStrategy = new DefaultBeanNameStrategy();
 
     public AnnotationApplicationContext(Class... configClasses) throws IocRuntimeException {
-        this(new AutowireCapableBeanFactory(), configClasses);
+        this(new AbstractBeanFactory(), configClasses);
     }
 
     public AnnotationApplicationContext(AbstractBeanFactory beanFactory, Class... configClasses) {

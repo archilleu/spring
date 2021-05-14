@@ -18,12 +18,7 @@ public class AbstractBeanFactoryTest {
         BeanDefinition beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.Apple");
 
-        beanFactory = new AbstractBeanFactory() {
-            @Override
-            protected void applyPropertyValues(Object bean, BeanDefinition mbd) {
-                super.applyPropertyValues(bean, mbd);
-            }
-        };
+        beanFactory = new AbstractBeanFactory();
         beanFactory.registerBeanDefinition(BEAN_NAME, beanDefinition);
 
         beanDefinition = new BeanDefinition();
@@ -109,7 +104,7 @@ public class AbstractBeanFactoryTest {
     public void testPrototype() throws Exception {
         Apple apple1 = beanFactory.getBean(BEAN_NAME_PROTOTYPE, Apple.class);
         Apple apple2 = beanFactory.getBean(BEAN_NAME_PROTOTYPE, Apple.class);
-        Assert.assertNotEquals(apple1, apple2);
+        Assert.assertFalse(apple1 == apple2);
     }
 
     @Test
@@ -138,5 +133,5 @@ public class AbstractBeanFactoryTest {
     final private static String BEAN_NAME_INVALID = "invalid";
     final private static String BEAN_NAME_FACTORY_METHOD = "apple_factory";
     final private static String BEAN_NAME_FACTORY_METHOD_ANNOTATION = "apple_factory_annotation";
-    final private static String BEAN_NAME_CONSTRUCTOR = "apple_factory";
+    final private static String BEAN_NAME_CONSTRUCTOR = "apple_factory_constructor";
 }

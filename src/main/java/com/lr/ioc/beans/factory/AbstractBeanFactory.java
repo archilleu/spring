@@ -13,7 +13,7 @@ import com.lr.ioc.support.lifecycle.init.InitializingBean;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractBeanFactory implements BeanFactory {
+public class AbstractBeanFactory implements BeanFactory {
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
 
@@ -101,13 +101,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     protected Object doCreateBean(BeanDefinition beanDefinition) {
         Object bean = createBeanInstance(beanDefinition);
 
-        /**
-         * TODO:初始化相关处理
-         * 1.属性、静态方法
-         * 2.注解
-         */
-        applyPropertyValues(bean, beanDefinition);
-
         // 初始化完成后调用
         InitializingBean initializingBean = new DefaultPostConstructBean(bean, beanDefinition);
         initializingBean.initialize();
@@ -116,9 +109,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
     protected Object createBeanInstance(BeanDefinition beanDefinition) {
         return DefaultNewInstanceBean.getInstance().newInstance(this, beanDefinition);
-    }
-
-    protected void applyPropertyValues(Object bean, BeanDefinition mbd) {
     }
 
     public void registerBeanDefinition(String name, BeanDefinition beanDefinition) {

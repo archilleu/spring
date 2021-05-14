@@ -16,7 +16,7 @@ public class BeanFactoryTest {
     @Test
     public void test() throws Exception {
         // 1.init
-        BeanFactory beanFactory = new AutowireCapableBeanFactory();
+        BeanFactory beanFactory = new AbstractBeanFactory();
 
         // 2.inject
         BeanDefinition beanDefinition = new BeanDefinition();
@@ -29,7 +29,7 @@ public class BeanFactoryTest {
         beanDefinition.setPropertyValues(propertyValues);
 
         // 4.register bean
-        ((AutowireCapableBeanFactory) beanFactory).registerBeanDefinition(BEAN_NAME, beanDefinition);
+        ((AbstractBeanFactory) beanFactory).registerBeanDefinition(BEAN_NAME, beanDefinition);
 
         // 3.get bean
         BeanServiceImpl beanController = (BeanServiceImpl) beanFactory.getBean(BEAN_NAME);
@@ -43,7 +43,7 @@ public class BeanFactoryTest {
         jsonBeanDefinitionReader.loadBeanDefinitions("bean.json");
 
         // 2.初始化BeanFactory并注册beans
-        AutowireCapableBeanFactory beanFactory = new AutowireCapableBeanFactory();
+        AbstractBeanFactory beanFactory = new AbstractBeanFactory();
         for (Map.Entry<String, BeanDefinition> beanDefinitionEntry : jsonBeanDefinitionReader.getRegistry().entrySet()) {
             beanFactory.registerBeanDefinition(beanDefinitionEntry.getKey(), beanDefinitionEntry.getValue());
         }
