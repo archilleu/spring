@@ -84,7 +84,7 @@ public class ClassUtils {
 
         // 2. 反射调用
         try {
-            return factoryMethod.invoke(null, factoryMethod);
+            return factoryMethod.invoke(null, null);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IocRuntimeException(e);
         }

@@ -71,9 +71,16 @@ public class ConstructorNewInstanceBean extends AbstractNewInstanceBean {
                 try {
                     Class<?> valueType = this.getClass().getClassLoader().loadClass(argDefinition.getType());
                     String valueStr = argDefinition.getValue();
-
                     types[i] = valueType;
-                    values[i] = valueStr;
+
+                    // TODO:各种类型的值
+                    if (valueType.equals(String.class)) {
+                        values[i] = valueStr;
+                    } else if (valueType.equals(Integer.class)) {
+                        values[i] = Integer.parseInt(valueStr);
+                    } else {
+                        throw new IocRuntimeException("not implement constructor args type " + valueType);
+                    }
                 } catch (ClassNotFoundException e) {
                     throw new IocRuntimeException(e);
                 }

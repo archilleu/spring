@@ -1,19 +1,21 @@
 package com.lr.ioc.beans.factory;
 
 import com.lr.ioc.beans.BeanDefinition;
+import com.lr.ioc.beans.ConstructorArgDefinition;
 import com.lr.ioc.constant.enums.ScopeEnum;
 import com.lr.ioc.exception.IocRuntimeException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class AbstractBeanFactoryTest {
 
     @Before
     public void init() throws Exception {
-        beanDefinition = new BeanDefinition();
+        BeanDefinition beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.Apple");
 
         beanFactory = new AbstractBeanFactory() {
@@ -29,6 +31,25 @@ public class AbstractBeanFactoryTest {
         beanDefinition.setLazyInit(true);
         beanDefinition.setScope(ScopeEnum.PROTOTYPE.getCode());
         beanFactory.registerBeanDefinition(BEAN_NAME_PROTOTYPE, beanDefinition);
+
+        beanDefinition = new BeanDefinition();
+        beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.Tomato");
+        beanFactory.registerBeanDefinition(BEAN_NAME_FACTORY_METHOD_ANNOTATION, beanDefinition);
+
+        beanDefinition = new BeanDefinition();
+        beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.Tomato");
+        beanDefinition.setFactoryMethod("newInstance");
+        beanFactory.registerBeanDefinition(BEAN_NAME_FACTORY_METHOD, beanDefinition);
+
+        beanDefinition = new BeanDefinition();
+        beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.ColorTomato");
+        List<ConstructorArgDefinition> list = new LinkedList<>();
+        ConstructorArgDefinition arg = new ConstructorArgDefinition();
+        arg.setType("java.lang.String");
+        arg.setValue("red");
+        list.add(arg);
+        beanDefinition.setConstructorArgList(list);
+        beanFactory.registerBeanDefinition(BEAN_NAME_CONSTRUCTOR, beanDefinition);
     }
 
     @Test
@@ -91,10 +112,31 @@ public class AbstractBeanFactoryTest {
         Assert.assertNotEquals(apple1, apple2);
     }
 
-    private BeanDefinition beanDefinition;
+    @Test
+    public void factoryMethodTest() throws Exception {
+        Tomato tomato = beanFactory.getBean(BEAN_NAME_FACTORY_METHOD, Tomato.class);
+        Assert.assertNotNull(tomato);
+    }
+
+    @Test
+    public void factoryMethodAnnotationTest() throws Exception {
+        Tomato tomato = beanFactory.getBean(BEAN_NAME_FACTORY_METHOD_ANNOTATION, Tomato.class);
+        Assert.assertNotNull(tomato);
+    }
+
+    @Test
+    public void constructorTest() throws Exception {
+        ColorTomato tomato = beanFactory.getBean(BEAN_NAME_CONSTRUCTOR, ColorTomato.class);
+        Assert.assertNotNull(tomato);
+        Assert.assertEquals(tomato.getColor(), "red");
+    }
+
     private AbstractBeanFactory beanFactory;
 
     final private static String BEAN_NAME = "apple";
     final private static String BEAN_NAME_PROTOTYPE = "apple1";
     final private static String BEAN_NAME_INVALID = "invalid";
+    final private static String BEAN_NAME_FACTORY_METHOD = "apple_factory";
+    final private static String BEAN_NAME_FACTORY_METHOD_ANNOTATION = "apple_factory_annotation";
+    final private static String BEAN_NAME_CONSTRUCTOR = "apple_factory";
 }
