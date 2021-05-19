@@ -52,4 +52,16 @@ public class AnnotationApplicationContextTest {
         Assert.assertNotNull(appAutowiredConfig.getTomato());
         Assert.assertNotNull(appAutowiredConfig.getRedTomato());
     }
+
+    @Test
+    public void autowiredPrimaryTest() {
+        ApplicationContext applicationContext = new AnnotationApplicationContext(AppAutowiredPrimaryConfig.class);
+
+
+        AppAutowiredPrimaryConfig appAutowiredPrimaryConfig = applicationContext.getBean("appAutowiredPrimaryConfig", AppAutowiredPrimaryConfig.class);
+        BeanService beanService = appAutowiredPrimaryConfig.getBeanService();
+        Assert.assertTrue(beanService instanceof BeanServiceImpl);
+        Banana banana = appAutowiredPrimaryConfig.getBanana();
+        Assert.assertEquals("primary", banana.getName());
+    }
 }

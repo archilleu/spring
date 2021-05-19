@@ -1,13 +1,11 @@
 package com.lr.ioc.beans;
 
 import com.lr.ioc.annotation.Configuration;
-import com.lr.ioc.annotation.Primary;
 
-@Primary
 @Configuration
-public class BeanServiceImpl implements BeanService {
+public class BeanServiceImpl1 implements BeanService {
 
-    public static final String MESSAGE = "first bean";
+    public static final String MESSAGE = "first bean1";
 
     @Override
     public String getMessage() {

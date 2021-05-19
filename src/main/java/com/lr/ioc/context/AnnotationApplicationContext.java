@@ -101,6 +101,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
         beanDefinition.setId(name);
         beanDefinition.setSourceType(BeanSourceType.CONFIGURATION);
+        if (clazz.isAnnotationPresent(Primary.class)) {
+            beanDefinition.setPrimary(true);
+        }
 
         return beanDefinition;
     }
@@ -135,6 +138,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             beanDefinition.setSourceType(BeanSourceType.CONFIGURATION_BEAN);
             beanDefinition.setConfigurationName(configuration.getId());
             beanDefinition.setConfigurationBeanMethod(methodName);
+            if (method.isAnnotationPresent(Primary.class)) {
+                beanDefinition.setPrimary(true);
+            }
 
             list.add(beanDefinition);
         }

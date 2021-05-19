@@ -65,6 +65,7 @@ public class BeanDefinition {
      */
     private String configurationName;
     private String configurationBeanMethod;
+    private boolean primary;
 
     /**
      * 对象工厂方法(必须静态、无参、返回对象)

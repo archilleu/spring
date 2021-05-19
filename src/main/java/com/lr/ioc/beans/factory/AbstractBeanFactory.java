@@ -1,7 +1,9 @@
 package com.lr.ioc.beans.factory;
 
+import com.lr.ioc.annotation.Primary;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.constant.ScopeConst;
+import com.lr.ioc.constant.enums.BeanSourceType;
 import com.lr.ioc.exception.IocRuntimeException;
 import com.lr.ioc.support.lifecycle.create.DefaultNewInstanceBean;
 import com.lr.ioc.support.lifecycle.destroy.DefaultPreDestroyBean;
@@ -69,7 +71,7 @@ public class AbstractBeanFactory implements BeanFactory {
     @Override
     public <T> T getTypeBean(Class<T> requiredType, String name) {
         Set<String> beanNames = getBeanNames(requiredType);
-        if (beanNames.isEmpty()) {
+        if (null == beanNames || beanNames.isEmpty()) {
             throw new IocRuntimeException("required type of " + requiredType.getName() + " beans not found");
         }
 
@@ -80,6 +82,11 @@ public class AbstractBeanFactory implements BeanFactory {
 
         if (StringUtils.isNotEmpty(name)) {
             return getBean(name, requiredType);
+        }
+
+        T primary = getPrimaryBean(requiredType, beanNames);
+        if (null != primary) {
+            return primary;
         }
 
         throw new IocRuntimeException("required type of " + requiredType.getName() + " not unique!");
@@ -175,5 +182,35 @@ public class AbstractBeanFactory implements BeanFactory {
         }
 
         return classSet;
+    }
+
+    private <T> T getPrimaryBean(Class<T> clazz, Set<String> beanNames) {
+        List<T> list = getBeans(clazz);
+        if (list.isEmpty()) {
+            return null;
+        }
+
+        // 1.首先检查类是否包含@Primary
+        for (T bean : list) {
+            if (bean.getClass().isAnnotationPresent(Primary.class)) {
+                return bean;
+            }
+        }
+
+        // 2.查看@Bean方法是否含有@Primary
+        for (String name : beanNames) {
+            // 2.1获取bean定义
+            BeanDefinition beanDefinition = beanDefinitionMap.get(name);
+            if (!BeanSourceType.isConfigurationBean(beanDefinition.getSourceType())) {
+                continue;
+            }
+
+            // 2.2判断bean是否@Primary
+            if (beanDefinition.isPrimary()) {
+                return (T) getBean(name);
+            }
+        }
+
+        return null;
     }
 }
