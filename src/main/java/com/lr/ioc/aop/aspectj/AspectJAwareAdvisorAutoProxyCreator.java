@@ -2,10 +2,10 @@ package com.lr.ioc.aop.aspectj;
 
 import com.lr.ioc.aop.proxy.ProxyFactory;
 import com.lr.ioc.aop.proxy.TargetSource;
-import com.lr.ioc.beans.BeanPostProcessor;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
 import com.lr.ioc.beans.factory.BeanFactory;
 import com.lr.ioc.exception.IocRuntimeException;
+import com.lr.ioc.support.processor.BeanPostProcessor;
 import org.aopalliance.intercept.MethodInterceptor;
 
 import java.util.List;

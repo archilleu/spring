@@ -2,6 +2,8 @@ package com.lr.ioc.aop.aspectj;
 
 import com.lr.ioc.beans.BeanService;
 import com.lr.ioc.beans.BeanServiceImpl;
+import com.lr.ioc.context.ApplicationContext;
+import com.lr.ioc.context.ClassPathJsonApplicationContext;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,5 +28,12 @@ public class AspectJExpressionPointcutTest {
         Method method = BeanServiceImpl.class.getDeclaredMethod("helloWorld");
         boolean matches = aspectJExpressionPointcut.getMethodMatcher().matches(method, BeanServiceImpl.class);
         Assert.assertTrue(matches);
+    }
+
+    @Test
+    public void testAspectJ() throws Exception {
+        ApplicationContext applicationContext = new ClassPathJsonApplicationContext();
+        BeanService beanService = (BeanService) applicationContext.getBean("beanService");
+        beanService.helloWorld();
     }
 }

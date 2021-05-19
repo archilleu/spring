@@ -20,6 +20,7 @@ public class BeanFactoryTest {
 
         // 2.inject
         BeanDefinition beanDefinition = new BeanDefinition();
+        beanDefinition.setId(BEAN_NAME);
         beanDefinition.setBeanClassName("com.lr.ioc.beans.BeanServiceImpl");
 
         // 3.set property
@@ -29,7 +30,7 @@ public class BeanFactoryTest {
         beanDefinition.setPropertyValues(propertyValues);
 
         // 4.register bean
-        ((AbstractBeanFactory) beanFactory).registerBeanDefinition(BEAN_NAME, beanDefinition);
+        ((AbstractBeanFactory) beanFactory).registerBeanDefinition(beanDefinition);
 
         // 3.get bean
         BeanServiceImpl beanController = (BeanServiceImpl) beanFactory.getBean(BEAN_NAME);
@@ -45,7 +46,7 @@ public class BeanFactoryTest {
         // 2.初始化BeanFactory并注册beans
         AbstractBeanFactory beanFactory = new AbstractBeanFactory();
         for (Map.Entry<String, BeanDefinition> beanDefinitionEntry : jsonBeanDefinitionReader.getRegistry().entrySet()) {
-            beanFactory.registerBeanDefinition(beanDefinitionEntry.getKey(), beanDefinitionEntry.getValue());
+            beanFactory.registerBeanDefinition(beanDefinitionEntry.getValue());
         }
 
         // 3.初始化bean

@@ -7,6 +7,7 @@ import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.BeanReference;
 import com.lr.ioc.beans.PropertyValue;
 import com.lr.ioc.beans.io.ResourceLoader;
+import com.lr.ioc.constant.enums.BeanSourceType;
 import com.lr.ioc.exception.IocRuntimeException;
 
 import java.io.File;
@@ -54,13 +55,11 @@ public class JsonBeanDefinitionReader extends AbstractBeanDefinitionReader {
             String clazz = item.getString(RESERVE_KEYWORD_BEAN_CLASS);
             String scope = item.getString(RESERVE_KEYWORD_BEAN_SCOPE);
             boolean lazyInit = item.getBooleanValue(RESERVE_KEYWORD_BEAN_LAZY_INIT);
-            try {
-                beanDefinition.setBeanClassName(clazz);
-            } catch (ClassNotFoundException e) {
-                throw new IocRuntimeException(e);
-            }
+            beanDefinition.setId(id);
+            beanDefinition.setBeanClassName(clazz);
             beanDefinition.setScope(scope);
             beanDefinition.setLazyInit(lazyInit);
+            beanDefinition.setSourceType(BeanSourceType.RESOURCE);
             if (null != super.getRegistry().put(id, beanDefinition)) {
                 throw new IocRuntimeException("id already exists: " + id);
             }

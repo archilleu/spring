@@ -1,14 +1,16 @@
 package com.lr.ioc.beans.factory;
 
 import com.lr.ioc.beans.BeanDefinition;
-import com.lr.ioc.beans.BeanPostProcessor;
-import com.lr.ioc.constant.enums.ScopeEnum;
+import com.lr.ioc.constant.ScopeConst;
 import com.lr.ioc.exception.IocRuntimeException;
 import com.lr.ioc.support.lifecycle.create.DefaultNewInstanceBean;
 import com.lr.ioc.support.lifecycle.destroy.DefaultPreDestroyBean;
 import com.lr.ioc.support.lifecycle.destroy.DisposableBean;
 import com.lr.ioc.support.lifecycle.init.DefaultPostConstructBean;
 import com.lr.ioc.support.lifecycle.init.InitializingBean;
+import com.lr.ioc.support.processor.BeanPostProcessor;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,6 +23,7 @@ public class AbstractBeanFactory implements BeanFactory {
 
     private final Map<Class, Set<String>> typeBeanNameMap = new ConcurrentHashMap<>();
 
+    @Getter
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     @Override
@@ -32,14 +35,12 @@ public class AbstractBeanFactory implements BeanFactory {
 
         Object bean;
         final String scope = beanDefinition.getScope();
-        if (ScopeEnum.PROTOTYPE.getCode().equals(scope)) {
+        if (ScopeConst.PROTOTYPE.equals(scope)) {
             bean = doCreateBean(beanDefinition);
-            bean = initializeBean(bean, name);
         } else {
             bean = beanDefinition.getBean();
             if (bean == null) {
                 bean = doCreateBean(beanDefinition);
-                bean = initializeBean(bean, name);
                 beanDefinition.setBean(bean);
             }
         }
@@ -53,18 +54,6 @@ public class AbstractBeanFactory implements BeanFactory {
         return (T) getBean(name);
     }
 
-    protected Object initializeBean(Object bean, String beanName) {
-        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
-            bean = beanPostProcessor.postProcessBeforeInitialization(bean, beanName);
-        }
-
-        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
-            bean = beanPostProcessor.postProcessAfterInitialization(bean, beanName);
-        }
-
-        return bean;
-    }
-
     @Override
     public <T> List<T> getBeans(final Class<T> type) {
         List<T> list = new LinkedList<>();
@@ -75,6 +64,25 @@ public class AbstractBeanFactory implements BeanFactory {
 
         names.forEach((name) -> list.add(getBean(name, type)));
         return list;
+    }
+
+    @Override
+    public <T> T getTypeBean(Class<T> requiredType, String name) {
+        Set<String> beanNames = getBeanNames(requiredType);
+        if (beanNames.isEmpty()) {
+            throw new IocRuntimeException("required type of " + requiredType.getName() + " beans not found");
+        }
+
+        if (beanNames.size() == 1) {
+            name = beanNames.iterator().next();
+            return getBean(name, requiredType);
+        }
+
+        if (StringUtils.isNotEmpty(name)) {
+            return getBean(name, requiredType);
+        }
+
+        throw new IocRuntimeException("required type of " + requiredType.getName() + " not unique!");
     }
 
     @Override
@@ -111,17 +119,15 @@ public class AbstractBeanFactory implements BeanFactory {
         return DefaultNewInstanceBean.getInstance().newInstance(this, beanDefinition);
     }
 
-    public void registerBeanDefinition(String name, BeanDefinition beanDefinition) {
-        beanDefinitionMap.put(name, beanDefinition);
+    public void registerBeanDefinition(BeanDefinition beanDefinition) {
+        // 添加bean's id到定义的映射
+        beanDefinitionMap.put(beanDefinition.getId(), beanDefinition);
 
-        beanDefinitionNames.add(name);
+        // 添加beans名字类
+        beanDefinitionNames.add(beanDefinition.getId());
 
-        Set<String> beanNameSet = typeBeanNameMap.get(beanDefinition.getBeanClass());
-        if (null == beanNameSet) {
-            beanNameSet = new HashSet<>();
-        }
-        beanNameSet.add(name);
-        typeBeanNameMap.put(beanDefinition.getBeanClass(), beanNameSet);
+        // 添加bean类型对应的bean名字列表
+        registerTypeBeanNames(beanDefinition.getId(), beanDefinition);
 
         return;
     }
@@ -145,5 +151,29 @@ public class AbstractBeanFactory implements BeanFactory {
             DisposableBean disposableBean = new DefaultPreDestroyBean(beanDefinition);
             disposableBean.destroy();
         });
+    }
+
+    private void registerTypeBeanNames(final String beanName, final BeanDefinition beanDefinition) {
+        final Set<Class<?>> typeSet = getTypeSet(beanDefinition);
+        typeSet.forEach((clazz) -> {
+            Set<String> beanNameSet = typeBeanNameMap.get(clazz);
+            if (null == beanNameSet) {
+                beanNameSet = new HashSet<>();
+            }
+            beanNameSet.add(beanName);
+            typeBeanNameMap.put(clazz, beanNameSet);
+        });
+    }
+
+    private Set<Class<?>> getTypeSet(final BeanDefinition beanDefinition) {
+        Set<Class<?>> classSet = new HashSet<>();
+        Class<?> clazz = beanDefinition.getBeanClass();
+        classSet.add(clazz);
+        Class<?>[] classes = clazz.getInterfaces();
+        if (classes.length != 0) {
+            classSet.addAll(Arrays.asList(classes));
+        }
+
+        return classSet;
     }
 }

@@ -3,10 +3,7 @@ package com.lr.ioc.util;
 import com.lr.ioc.exception.IocRuntimeException;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 
 public class ClassUtils {
 
@@ -86,6 +83,39 @@ public class ClassUtils {
         try {
             return factoryMethod.invoke(null, null);
         } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new IocRuntimeException(e);
+        }
+    }
+
+    public static Object invokeMethod(final Object object, final Method method, Object... args) {
+        try {
+            if (null == args) {
+                return method.invoke(object);
+            } else {
+                return method.invoke(object, args);
+            }
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new IocRuntimeException(e);
+        }
+    }
+
+    public static void setFieldValue(String field, Object instance, Object value) {
+        //是否定义setter方法
+        try {
+            String methodName = "set" + field.substring(0, 1).toUpperCase() + field.substring(1);
+            Method declareMethod = instance.getClass().getDeclaredMethod(methodName, value.getClass());
+            declareMethod.setAccessible(true);
+            declareMethod.invoke(instance, value);
+        } catch (NoSuchMethodException ex) {
+            try {
+                Class<?> clazz = instance.getClass();
+                Field declaredField = clazz.getDeclaredField(field);
+                declaredField.setAccessible(true);
+                declaredField.set(instance, value);
+            } catch (Exception e) {
+                throw new IocRuntimeException(e);
+            }
+        } catch (Exception e) {
             throw new IocRuntimeException(e);
         }
     }

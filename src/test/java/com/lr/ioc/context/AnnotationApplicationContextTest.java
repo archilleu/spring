@@ -1,17 +1,55 @@
 package com.lr.ioc.context;
 
-import com.lr.ioc.beans.AppConfig;
+import com.lr.ioc.beans.*;
+import com.lr.ioc.beans.factory.ColorTomato;
+import com.lr.ioc.beans.factory.Tomato;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class AnnotationApplicationContextTest {
 
     @Test
-    public void test() throws Exception {
+    public void testConfiguration() throws Exception {
         ApplicationContext applicationContext = new AnnotationApplicationContext(AppConfig.class);
         AppConfig appConfig = applicationContext.getBean("appConfig", AppConfig.class);
 
         Assert.assertEquals("app config", appConfig.name());
     }
 
+    @Test
+    public void testBeanConfiguration() throws Exception {
+        ApplicationContext applicationContext = new AnnotationApplicationContext(AppBeanConfig.class);
+        AppConfig appConfig = applicationContext.getBean("appConfig", AppConfig.class);
+
+        Assert.assertEquals("app config", appConfig.name());
+    }
+
+    @Test
+    public void configBeanLazyScopeConfigTest() throws Exception {
+        ApplicationContext applicationContext = new AnnotationApplicationContext(AnnoLazyScopeConfig.class);
+        ColorTomato colorTomato = applicationContext.getBean("colorTomato", ColorTomato.class);
+        Assert.assertNotNull(colorTomato);
+
+        Tomato tomato1 = applicationContext.getBean("tomato", Tomato.class);
+        Tomato tomato2 = applicationContext.getBean("tomato", Tomato.class);
+        Assert.assertTrue(tomato1 != tomato2);
+    }
+
+    @Test
+    public void importTest() throws Exception {
+        ApplicationContext applicationContext = new AnnotationApplicationContext(AppBeanConfigImport.class);
+        AppConfig appConfig = applicationContext.getBean("appConfig", AppConfig.class);
+        Assert.assertNotNull(appConfig);
+    }
+
+    @Test
+    public void autowiredTest() throws Exception {
+        ApplicationContext applicationContext = new AnnotationApplicationContext(AppAutowiredConfig.class);
+        AppAutowiredConfig appAutowiredConfig = applicationContext.getBean("appAutowiredConfig", AppAutowiredConfig.class);
+        Assert.assertNotNull(appAutowiredConfig);
+        Assert.assertNull(appAutowiredConfig.getNullValue());
+        Assert.assertNotNull(appAutowiredConfig.getAppConfig());
+        Assert.assertNotNull(appAutowiredConfig.getTomato());
+        Assert.assertNotNull(appAutowiredConfig.getRedTomato());
+    }
 }

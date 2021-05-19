@@ -34,9 +34,10 @@ public class ClassPathJsonApplicationContext extends AbstractApplicationContext 
 
         // 2.初始化BeanFactory并注册beans
         for (Map.Entry<String, BeanDefinition> beanDefinitionEntry : jsonBeanDefinitionReader.getRegistry().entrySet()) {
-            super.beanFactory.registerBeanDefinition(beanDefinitionEntry.getKey(), beanDefinitionEntry.getValue());
+            super.beanFactory.registerBeanDefinition(beanDefinitionEntry.getValue());
         }
     }
 
     private final static String CLASSPATH_JSON_DEFAULT_FILE = "bean.json";
+
 }

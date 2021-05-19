@@ -1,6 +1,7 @@
 package com.lr.ioc.beans;
 
 import com.lr.ioc.exception.IocRuntimeException;
+import com.lr.ioc.support.processor.BeanPostProcessor;
 
 public class BeanInitializeLogger implements BeanPostProcessor {
 

@@ -39,6 +39,8 @@ public interface BeanFactory {
      */
     <T> List<T> getBeans(final Class<T> type);
 
+    <T> T getTypeBean(Class<T> requiredType, String name);
+
     /**
      * 判断是否包含bean
      *

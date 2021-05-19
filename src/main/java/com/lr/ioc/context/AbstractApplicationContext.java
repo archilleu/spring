@@ -1,8 +1,8 @@
 package com.lr.ioc.context;
 
-import com.lr.ioc.beans.BeanPostProcessor;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
 import com.lr.ioc.exception.IocRuntimeException;
+import com.lr.ioc.support.processor.BeanPostProcessor;
 
 import java.util.List;
 
@@ -55,6 +55,11 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     @Override
     public <T> List<T> getBeans(final Class<T> type) {
         return this.beanFactory.getBeans(type);
+    }
+
+    @Override
+    public <T> T getTypeBean(Class<T> requiredType, String name) {
+        return this.beanFactory.getTypeBean(requiredType, name);
     }
 
     @Override

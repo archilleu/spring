@@ -2,7 +2,7 @@ package com.lr.ioc.beans.factory;
 
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.ConstructorArgDefinition;
-import com.lr.ioc.constant.enums.ScopeEnum;
+import com.lr.ioc.constant.ScopeConst;
 import com.lr.ioc.exception.IocRuntimeException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,22 +19,26 @@ public class AbstractBeanFactoryTest {
         beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.Apple");
 
         beanFactory = new AbstractBeanFactory();
-        beanFactory.registerBeanDefinition(BEAN_NAME, beanDefinition);
+        beanDefinition.setId(BEAN_NAME);
+        beanFactory.registerBeanDefinition(beanDefinition);
 
         beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.Apple");
         beanDefinition.setLazyInit(true);
-        beanDefinition.setScope(ScopeEnum.PROTOTYPE.getCode());
-        beanFactory.registerBeanDefinition(BEAN_NAME_PROTOTYPE, beanDefinition);
+        beanDefinition.setScope(ScopeConst.PROTOTYPE);
+        beanDefinition.setId(BEAN_NAME_PROTOTYPE);
+        beanFactory.registerBeanDefinition(beanDefinition);
 
         beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.Tomato");
-        beanFactory.registerBeanDefinition(BEAN_NAME_FACTORY_METHOD_ANNOTATION, beanDefinition);
+        beanDefinition.setId(BEAN_NAME_FACTORY_METHOD_ANNOTATION);
+        beanFactory.registerBeanDefinition(beanDefinition);
 
         beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.Tomato");
         beanDefinition.setFactoryMethod("newInstance");
-        beanFactory.registerBeanDefinition(BEAN_NAME_FACTORY_METHOD, beanDefinition);
+        beanDefinition.setId(BEAN_NAME_FACTORY_METHOD);
+        beanFactory.registerBeanDefinition(beanDefinition);
 
         beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName("com.lr.ioc.beans.factory.ColorTomato");
@@ -44,7 +48,8 @@ public class AbstractBeanFactoryTest {
         arg.setValue("red");
         list.add(arg);
         beanDefinition.setConstructorArgList(list);
-        beanFactory.registerBeanDefinition(BEAN_NAME_CONSTRUCTOR, beanDefinition);
+        beanDefinition.setId(BEAN_NAME_CONSTRUCTOR);
+        beanFactory.registerBeanDefinition(beanDefinition);
     }
 
     @Test

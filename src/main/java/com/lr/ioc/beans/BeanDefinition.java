@@ -1,6 +1,8 @@
 package com.lr.ioc.beans;
 
 import com.lr.ioc.beans.factory.BeanFactory;
+import com.lr.ioc.constant.enums.BeanSourceType;
+import com.lr.ioc.exception.IocRuntimeException;
 import lombok.Data;
 
 import java.util.List;
@@ -54,6 +56,17 @@ public class BeanDefinition {
     private String destroy;
 
     /**
+     * 来源
+     */
+    private BeanSourceType sourceType;
+
+    /**
+     * 成员类，限定BeanSourceType#CONFIGURATION_BEAN使用
+     */
+    private String configurationName;
+    private String configurationBeanMethod;
+
+    /**
      * 对象工厂方法(必须静态、无参、返回对象)
      */
     private String factoryMethod;
@@ -70,9 +83,13 @@ public class BeanDefinition {
      */
     private PropertyValues propertyValues = new PropertyValues();
 
-    public void setBeanClassName(String beanClassName) throws ClassNotFoundException {
-        this.beanClass = Class.forName(beanClassName);
-        this.beanClassName = beanClassName;
+    public void setBeanClassName(String beanClassName) {
+        try {
+            this.beanClass = Class.forName(beanClassName);
+            this.beanClassName = beanClassName;
+        } catch (ClassNotFoundException e) {
+            throw new IocRuntimeException(e);
+        }
     }
 
 }
