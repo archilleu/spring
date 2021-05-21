@@ -3,6 +3,8 @@ package com.lr.ioc.context;
 import com.lr.ioc.beans.*;
 import com.lr.ioc.beans.factory.ColorTomato;
 import com.lr.ioc.beans.factory.Tomato;
+import com.lr.ioc.beans.scan.ScanApplication;
+import com.lr.ioc.beans.scan.service.ServiceOutput;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,5 +65,12 @@ public class AnnotationApplicationContextTest {
         Assert.assertTrue(beanService instanceof BeanServiceImpl);
         Banana banana = appAutowiredPrimaryConfig.getBanana();
         Assert.assertEquals("primary", banana.getName());
+    }
+
+    @Test
+    public void componentScanTest() {
+        ApplicationContext applicationContext = new AnnotationApplicationContext(ScanApplication.class);
+        ServiceOutput serviceOutput = applicationContext.getBean("serviceOutputImpl", ServiceOutput.class);
+        Assert.assertNotNull(serviceOutput);
     }
 }

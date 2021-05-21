@@ -8,6 +8,20 @@ import java.lang.reflect.*;
 public class ClassUtils {
 
     /**
+     * 获取类信息
+     *
+     * @param className
+     * @return
+     */
+    public static Class<?> getClass(final String className) {
+        try {
+            return Thread.currentThread().getContextClassLoader().loadClass(className);
+        } catch (ClassNotFoundException ex) {
+            throw new IocRuntimeException(ex);
+        }
+    }
+
+    /**
      * 根据无参构造函数创建类实例
      */
     public static Object newInstance(final Class<?> clazz) {

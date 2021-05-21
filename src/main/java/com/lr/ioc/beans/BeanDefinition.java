@@ -4,6 +4,8 @@ import com.lr.ioc.beans.factory.BeanFactory;
 import com.lr.ioc.constant.enums.BeanSourceType;
 import com.lr.ioc.exception.IocRuntimeException;
 import lombok.Data;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.List;
 
@@ -93,4 +95,13 @@ public class BeanDefinition {
         }
     }
 
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other, id);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, id);
+    }
 }

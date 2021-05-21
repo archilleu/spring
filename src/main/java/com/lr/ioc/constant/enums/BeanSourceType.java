@@ -16,9 +16,15 @@ public enum BeanSourceType {
     CONFIGURATION,
 
     /**
+     * 来自COMPONENT注解
+     */
+    COMPONENT,
+
+    /**
      * 来自注解bean
      */
     CONFIGURATION_BEAN;
+
 
     public static boolean isResourceBean(final BeanSourceType beanSourceType) {
         return RESOURCE.equals(beanSourceType);

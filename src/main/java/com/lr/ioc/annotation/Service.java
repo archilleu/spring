@@ -5,13 +5,13 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Indexed
-public @interface Component {
+@Component
+public @interface Service {
 
     /**
-     * 组件名称
+     * 服务类名称
      *
-     * @return 组件名称
+     * @return
      */
     String value() default "";
 

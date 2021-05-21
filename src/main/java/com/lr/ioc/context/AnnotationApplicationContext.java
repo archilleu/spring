@@ -4,12 +4,15 @@ import com.lr.ioc.annotation.*;
 import com.lr.ioc.aop.aspectj.AspectJAwareAdvisorAutoProxyCreator;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
-import com.lr.ioc.constant.ScopeConst;
 import com.lr.ioc.constant.enums.BeanSourceType;
 import com.lr.ioc.exception.IocRuntimeException;
+import com.lr.ioc.support.annotation.Lazes;
+import com.lr.ioc.support.annotation.Scopes;
 import com.lr.ioc.support.name.BeanNameStrategy;
 import com.lr.ioc.support.name.impl.DefaultBeanNameStrategy;
 import com.lr.ioc.support.processor.impl.AutowiredAnnotationBeanPostProcessor;
+import com.lr.ioc.support.scanner.impl.ClassPathAnnotationBeanDefinitionScanner;
+import com.lr.ioc.support.scanner.impl.DefaultBeanDefinitionScannerContext;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,12 +45,44 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             if (null == beanDefinition) {
                 continue;
             }
-
             beanFactory.registerBeanDefinition(beanDefinition);
 
+            // {@link @Bean}定义
             List<BeanDefinition> beanDefinitions = buildBeanAnnotationList(beanDefinition, clazz);
             beanDefinitions.forEach(definition -> beanFactory.registerBeanDefinition(definition));
+
+            // {@link ComponentScan}定义
+            Set<BeanDefinition> beanDefinitionSet = buildScanBeanDefinitionSet(clazz);
+            if (null != beanDefinitionSet) {
+                beanDefinitionSet.forEach(definition -> {
+                    beanFactory.registerBeanDefinition(definition);
+                });
+            }
+
         }
+    }
+
+    /**
+     * 自动扫描注解类
+     *
+     * @param clazz 可能包含{@link ComponentScan}类
+     * @return bean定义集合
+     */
+    private Set<BeanDefinition> buildScanBeanDefinitionSet(final Class<?> clazz) {
+        if (!clazz.isAnnotationPresent(ComponentScan.class)) {
+            return null;
+        }
+
+        Set<BeanDefinition> beanDefinitionSet = new HashSet<>();
+        ComponentScan componentScan = (ComponentScan) clazz.getAnnotation(ComponentScan.class);
+
+        DefaultBeanDefinitionScannerContext context = new DefaultBeanDefinitionScannerContext();
+        context.setScanPackages(Arrays.asList(componentScan.value()));
+        context.setBeanNameStrategy(componentScan.beanNameStrategy());
+        context.setIncludes(Arrays.asList(componentScan.includes()));
+        context.setExcludes(Arrays.asList(componentScan.excludes()));
+
+        return new ClassPathAnnotationBeanDefinitionScanner().scan(context);
     }
 
     /**
@@ -94,8 +129,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
         BeanDefinition beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName(clazz.getName());
-        beanDefinition.setLazyInit(getLazy(clazz));
-        beanDefinition.setScope(getScope(clazz));
+        beanDefinition.setLazyInit(Lazes.getLazy(clazz));
+        beanDefinition.setScope(Scopes.getScope(clazz));
         if (StringUtils.isEmpty(name)) {
             name = beanNameStrategy.generateBeanName(beanDefinition);
         }
@@ -132,8 +167,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             beanDefinition.setBeanClassName(returnType.getName());
             beanDefinition.setInitialize(bean.initMethod());
             beanDefinition.setDestroy(bean.destroyMethod());
-            beanDefinition.setLazyInit(getLazy(method));
-            beanDefinition.setScope(getScope(method));
+            beanDefinition.setLazyInit(Lazes.getLazy(method));
+            beanDefinition.setScope(Scopes.getScope(method));
 
             beanDefinition.setSourceType(BeanSourceType.CONFIGURATION_BEAN);
             beanDefinition.setConfigurationName(configuration.getId());
@@ -146,42 +181,6 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
 
         return list;
-    }
-
-    private String getScope(final Method method) {
-        if (method.isAnnotationPresent(Scope.class)) {
-            Scope scope = method.getAnnotation(Scope.class);
-            return scope.value();
-        }
-
-        return ScopeConst.SINGLETON;
-    }
-
-    private String getScope(final Class<?> clazz) {
-        if (clazz.isAnnotationPresent(Scope.class)) {
-            Scope scope = clazz.getAnnotation(Scope.class);
-            return scope.value();
-        }
-
-        return ScopeConst.SINGLETON;
-    }
-
-    private boolean getLazy(final Method method) {
-        if (method.isAnnotationPresent(Lazy.class)) {
-            Lazy lazy = method.getAnnotation(Lazy.class);
-            return lazy.value();
-        }
-
-        return false;
-    }
-
-    private boolean getLazy(final Class<?> clazz) {
-        if (clazz.isAnnotationPresent(Lazy.class)) {
-            Lazy lazy = clazz.getAnnotation(Lazy.class);
-            return lazy.value();
-        }
-
-        return false;
     }
 
 }
