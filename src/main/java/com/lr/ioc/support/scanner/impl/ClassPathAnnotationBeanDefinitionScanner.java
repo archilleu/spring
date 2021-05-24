@@ -1,5 +1,7 @@
 package com.lr.ioc.support.scanner.impl;
 
+import com.lr.ioc.annotation.Component;
+import com.lr.ioc.annotation.Primary;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.constant.enums.BeanSourceType;
 import com.lr.ioc.exception.IocRuntimeException;
@@ -11,6 +13,7 @@ import com.lr.ioc.support.scanner.AnnotationBeanDefinitionScanner;
 import com.lr.ioc.support.scanner.BeanDefinitionScannerContext;
 import com.lr.ioc.util.ClassAnnotationTypeMetadata;
 import com.lr.ioc.util.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -133,9 +136,21 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
         beanDefinition.setLazyInit(Lazes.getLazy(clazz));
         beanDefinition.setScope(Scopes.getScope(clazz));
         beanDefinition.setSourceType(BeanSourceType.COMPONENT);
-        List<Class<? extends Annotation>> includes = context.getIncludes();
-        Class<? extends Annotation> a = typeMetadata.isAnnotatedOrMeta(context.getIncludes());
-        return null;
+        Object id = typeMetadata.getDirectComponentAnnotationName(Component.class, "value");
+        if (null == id) {
+            beanDefinition.setId(beanNameStrategy.generateBeanName(beanDefinition));
+        } else {
+            if (StringUtils.isEmpty((String) id)) {
+                beanDefinition.setId(beanNameStrategy.generateBeanName(beanDefinition));
+            } else {
+                beanDefinition.setId((String) id);
+            }
+        }
+        if (clazz.isAnnotationPresent(Primary.class)) {
+            beanDefinition.setPrimary(true);
+        }
+
+        return beanDefinition;
     }
 
 }

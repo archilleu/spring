@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 public @interface ComponentScan {
 
-    String[] value();
+    String[] value() default {};
 
     Class<? extends Annotation>[] excludes() default {};
 

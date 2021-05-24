@@ -12,6 +12,6 @@ import java.lang.annotation.*;
 @Service
 public @interface TestAnnotation {
 
-    String value() default "";
+    String value() default "test";
 
 }

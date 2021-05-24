@@ -1,16 +1,13 @@
 package com.lr.ioc.util;
 
 import com.lr.ioc.annotation.Component;
-import com.lr.ioc.annotation.Controller;
-import com.lr.ioc.annotation.Repository;
-import com.lr.ioc.annotation.Service;
 import com.lr.ioc.exception.IocRuntimeException;
 
 import java.lang.annotation.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.util.*;
 
 public class ClassAnnotationTypeMetadata {
 
@@ -76,6 +73,40 @@ public class ClassAnnotationTypeMetadata {
         return annotationSet;
     }
 
+    /**
+     * 获取类被标注的注解
+     *
+     * @param annotationClass
+     * @return
+     */
+    public Object getDirectComponentAnnotationName(Class<? extends Annotation> annotationClass, String filed) {
+        Annotation annotation = null;
+        for (Annotation tmp : annotations) {
+            //1.直接注解包好目标注解
+            if (tmp.annotationType().equals(annotationClass)) {
+                annotation = tmp;
+                break;
+            }
+        }
+        if (null == annotation) {
+            Set<Annotation> annotationSet = getAnnotationMeta(Component.class);
+            if (annotationSet.isEmpty()) {
+                return null;
+            }
+            annotation = annotationSet.iterator().next();
+        }
+
+        InvocationHandler h = Proxy.getInvocationHandler(annotation);
+        try {
+            Field field = h.getClass().getDeclaredField("memberValues");
+            field.setAccessible(true);
+            Map<String, Object> values = (Map<String, Object>) field.get(h);
+            return values.get(filed);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IocRuntimeException(e);
+        }
+    }
+
     private boolean checkHasMetaAnnotation(final Annotation annotation, final Class<? extends Annotation> annotationClass) {
         if (annotation.annotationType().equals(annotationClass)) {
             return true;
@@ -93,42 +124,6 @@ public class ClassAnnotationTypeMetadata {
         }
 
         return false;
-    }
-
-    public Annotation getComponentAnnotation(Class<? extends Annotation> annotationClass) {
-        for (Annotation annotation : annotations) {
-            //1.直接注解包好目标注解
-            if (annotation.annotationType().equals(annotationClass)) {
-                return annotation;
-            }
-
-            //2.直接注解类型被目标注解类型注释
-//            for (Annotation annotationsRefs: annotation.annotationType().getAnnotations()) {
-//                for (Annotation item : annotationsRefs) {
-//                    // 当前注解类型是目标注解
-//                    if (item.annotationType().equals(annotationClass)) {
-//                    }
-//
-//                    // 当前注解类型被当前注解注解(@Service->@Component->@Indexed)
-//                    if (item.annotationType().isAnnotationPresent(annotationClass)) {
-//                    }
-//                }
-//            }
-
-            if (annotation.annotationType().equals(Component.class)) {
-                return annotation;
-            } else if (annotation.annotationType().equals(Controller.class)) {
-                return annotation;
-            } else if (annotation.annotationType().equals(Service.class)) {
-                return annotation;
-            } else if (annotation.annotationType().equals(Repository.class)) {
-                return annotation;
-            } else {
-                throw new IocRuntimeException("get component annotation failed");
-            }
-        }
-
-        return null;
     }
 
     private Annotation[] buildInMetaAnnotation(Annotation[] annotations) {

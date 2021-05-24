@@ -4,7 +4,7 @@ import com.lr.ioc.beans.*;
 import com.lr.ioc.beans.factory.ColorTomato;
 import com.lr.ioc.beans.factory.Tomato;
 import com.lr.ioc.beans.scan.ScanApplication;
-import com.lr.ioc.beans.scan.service.ServiceOutput;
+import com.lr.ioc.beans.scan.controller.IndexController;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -70,7 +70,8 @@ public class AnnotationApplicationContextTest {
     @Test
     public void componentScanTest() {
         ApplicationContext applicationContext = new AnnotationApplicationContext(ScanApplication.class);
-        ServiceOutput serviceOutput = applicationContext.getBean("serviceOutputImpl", ServiceOutput.class);
-        Assert.assertNotNull(serviceOutput);
+        IndexController indexController = applicationContext.getBean(IndexController.INDEX, IndexController.class);
+        Assert.assertNotNull(indexController);
+        Assert.assertEquals(indexController.serviceOutput(), IndexController.INDEX);
     }
 }

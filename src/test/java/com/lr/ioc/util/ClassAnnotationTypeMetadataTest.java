@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.annotation.Annotation;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class ClassAnnotationTypeMetadataTest {
@@ -47,6 +48,17 @@ public class ClassAnnotationTypeMetadataTest {
         Assert.assertTrue(metadata.isAnnotatedOrMeta(Controller.class));
         Assert.assertFalse(metadata.isAnnotatedOrMeta(Test.class));
 
-        //list
+        Class<?> metaClass = metadata.isAnnotatedOrMeta(new LinkedList<Class<? extends Annotation>>() {{
+            add(Controller.class);
+            add(Service.class);
+        }});
+        Assert.assertTrue(metaClass.equals(Controller.class));
+    }
+
+    @Test
+    public void getDirectComponentAnnotationNameTest() throws Exception {
+        Object value = metadata.getDirectComponentAnnotationName(Component.class, "value");
+        Assert.assertNotNull(value);
+        Assert.assertEquals("test", value);
     }
 }

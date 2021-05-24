@@ -77,7 +77,15 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         ComponentScan componentScan = (ComponentScan) clazz.getAnnotation(ComponentScan.class);
 
         DefaultBeanDefinitionScannerContext context = new DefaultBeanDefinitionScannerContext();
-        context.setScanPackages(Arrays.asList(componentScan.value()));
+        if (componentScan.value().length == 0) {
+            //默认扫描包下的所有类
+            String defaultPackage = clazz.getPackage().getName();
+            context.setScanPackages(new LinkedList<String>() {{
+                add(defaultPackage);
+            }});
+        } else {
+            context.setScanPackages(Arrays.asList(componentScan.value()));
+        }
         context.setBeanNameStrategy(componentScan.beanNameStrategy());
         context.setIncludes(Arrays.asList(componentScan.includes()));
         context.setExcludes(Arrays.asList(componentScan.excludes()));
