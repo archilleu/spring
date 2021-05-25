@@ -128,7 +128,9 @@ public class AbstractBeanFactory implements BeanFactory {
 
     public void registerBeanDefinition(BeanDefinition beanDefinition) {
         // 添加bean's id到定义的映射
-        beanDefinitionMap.put(beanDefinition.getId(), beanDefinition);
+        if (null != beanDefinitionMap.put(beanDefinition.getId(), beanDefinition)) {
+            throw new IocRuntimeException(beanDefinition.getId() + " not unique");
+        }
 
         // 添加beans名字类
         beanDefinitionNames.add(beanDefinition.getId());

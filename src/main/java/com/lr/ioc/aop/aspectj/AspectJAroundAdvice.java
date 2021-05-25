@@ -1,5 +1,9 @@
 package com.lr.ioc.aop.aspectj;
 
+/**
+ * @Aspect注解@Around代理
+ */
+
 import com.lr.ioc.beans.factory.BeanFactory;
 import lombok.Data;
 import org.aopalliance.aop.Advice;
@@ -17,8 +21,13 @@ public class AspectJAroundAdvice implements Advice, MethodInterceptor {
 
     private String aspectInstanceName;
 
+    private Object params;
+
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable, Exception {
-        return aspectJAdviceMethod.invoke(beanFactory.getBean(aspectInstanceName), methodInvocation);
+        ProceedingJoinPoint proceedingJoinPoint = new ProceedingJoinPoint(methodInvocation);
+        Object instance = beanFactory.getBean(aspectInstanceName);
+        Object obj = aspectJAdviceMethod.invoke(instance, proceedingJoinPoint);
+        return obj;
     }
 }

@@ -16,7 +16,12 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     public void refresh() {
         loadBeanDefinitions(beanFactory);
+
+        /**
+         * BeanPostProcessor先于普通bean创建，在此之前registerBeanPostProcessors大小是0
+         */
         registerBeanPostProcessors(beanFactory);
+
         onRefresh();
     }
 

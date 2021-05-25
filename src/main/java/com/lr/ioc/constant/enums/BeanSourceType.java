@@ -23,7 +23,12 @@ public enum BeanSourceType {
     /**
      * 来自注解bean
      */
-    CONFIGURATION_BEAN;
+    CONFIGURATION_BEAN,
+
+    /**
+     * 来之{@link com.lr.ioc.annotation.Aspect}
+     */
+    AOP;
 
 
     public static boolean isResourceBean(final BeanSourceType beanSourceType) {

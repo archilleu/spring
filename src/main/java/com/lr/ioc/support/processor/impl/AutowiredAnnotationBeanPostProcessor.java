@@ -2,9 +2,9 @@ package com.lr.ioc.support.processor.impl;
 
 import com.lr.ioc.annotation.Autowired;
 import com.lr.ioc.annotation.Configuration;
-import com.lr.ioc.aop.aspectj.BeanFactoryAware;
 import com.lr.ioc.beans.factory.BeanFactory;
 import com.lr.ioc.exception.IocRuntimeException;
+import com.lr.ioc.support.aware.BeanFactoryAware;
 import com.lr.ioc.support.processor.BeanPostProcessor;
 import com.lr.ioc.util.ClassUtils;
 

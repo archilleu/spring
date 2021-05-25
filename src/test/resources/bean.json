@@ -56,7 +56,7 @@
     },
     {
       "id": "autoProxyCreator",
-      "class": "com.lr.ioc.aop.aspectj.AspectJAwareAdvisorAutoProxyCreator"
+      "class": "com.lr.ioc.support.processor.impl.AspectJAwareAdvisorAutoProxyCreator"
     },
     {
       "id": "aspectjAspect",

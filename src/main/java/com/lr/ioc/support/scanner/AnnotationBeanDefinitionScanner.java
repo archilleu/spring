@@ -2,7 +2,7 @@ package com.lr.ioc.support.scanner;
 
 import com.lr.ioc.beans.BeanDefinition;
 
-import java.util.Set;
+import java.util.List;
 
 public interface AnnotationBeanDefinitionScanner {
 
@@ -12,6 +12,6 @@ public interface AnnotationBeanDefinitionScanner {
      * @param context 定义
      * @return {@link BeanDefinition}集合
      */
-    Set<BeanDefinition> scan(final BeanDefinitionScannerContext context);
+    List<BeanDefinition> scan(final BeanDefinitionScannerContext context);
 
 }

@@ -1,15 +1,14 @@
 package com.lr.ioc.context;
 
 import com.lr.ioc.annotation.*;
-import com.lr.ioc.aop.aspectj.AspectJAwareAdvisorAutoProxyCreator;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
 import com.lr.ioc.constant.enums.BeanSourceType;
-import com.lr.ioc.exception.IocRuntimeException;
 import com.lr.ioc.support.annotation.Lazes;
 import com.lr.ioc.support.annotation.Scopes;
 import com.lr.ioc.support.name.BeanNameStrategy;
 import com.lr.ioc.support.name.impl.DefaultBeanNameStrategy;
+import com.lr.ioc.support.processor.impl.AspectJAwareAdvisorAutoProxyCreator;
 import com.lr.ioc.support.processor.impl.AutowiredAnnotationBeanPostProcessor;
 import com.lr.ioc.support.scanner.impl.ClassPathAnnotationBeanDefinitionScanner;
 import com.lr.ioc.support.scanner.impl.DefaultBeanDefinitionScannerContext;
@@ -26,7 +25,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     @Setter
     private BeanNameStrategy beanNameStrategy = new DefaultBeanNameStrategy();
 
-    public AnnotationApplicationContext(Class<?>... configClasses) throws IocRuntimeException {
+    public AnnotationApplicationContext(Class<?>... configClasses) {
         this(new AbstractBeanFactory(), configClasses);
     }
 
@@ -52,13 +51,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             beanDefinitions.forEach(definition -> beanFactory.registerBeanDefinition(definition));
 
             // {@link ComponentScan}定义
-            Set<BeanDefinition> beanDefinitionSet = buildScanBeanDefinitionSet(clazz);
-            if (null != beanDefinitionSet) {
-                beanDefinitionSet.forEach(definition -> {
-                    beanFactory.registerBeanDefinition(definition);
-                });
-            }
-
+            buildScanBeanDefinitionList(clazz).forEach(definition -> {
+                beanFactory.registerBeanDefinition(definition);
+            });
         }
     }
 
@@ -68,12 +63,11 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * @param clazz 可能包含{@link ComponentScan}类
      * @return bean定义集合
      */
-    private Set<BeanDefinition> buildScanBeanDefinitionSet(final Class<?> clazz) {
+    private List<BeanDefinition> buildScanBeanDefinitionList(final Class<?> clazz) {
         if (!clazz.isAnnotationPresent(ComponentScan.class)) {
-            return null;
+            return new LinkedList<>();
         }
 
-        Set<BeanDefinition> beanDefinitionSet = new HashSet<>();
         ComponentScan componentScan = (ComponentScan) clazz.getAnnotation(ComponentScan.class);
 
         DefaultBeanDefinitionScannerContext context = new DefaultBeanDefinitionScannerContext();
@@ -90,7 +84,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         context.setIncludes(Arrays.asList(componentScan.includes()));
         context.setExcludes(Arrays.asList(componentScan.excludes()));
 
-        return new ClassPathAnnotationBeanDefinitionScanner().scan(context);
+        ClassPathAnnotationBeanDefinitionScanner scanner = new ClassPathAnnotationBeanDefinitionScanner();
+        scanner.setBeanFactory(beanFactory);
+        return scanner.scan(context);
     }
 
     /**
