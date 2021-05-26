@@ -1,10 +1,7 @@
 package com.lr.ioc.support.scanner.impl;
 
 import com.lr.ioc.annotation.*;
-import com.lr.ioc.aop.aspectj.AbstractAspectJAdvice;
-import com.lr.ioc.aop.aspectj.AspectJAfterAdvice;
-import com.lr.ioc.aop.aspectj.AspectJBeforeAdvice;
-import com.lr.ioc.aop.aspectj.AspectJExpressionPointcutAdvisor;
+import com.lr.ioc.aop.aspectj.*;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.PropertyValue;
 import com.lr.ioc.beans.PropertyValues;
@@ -229,7 +226,7 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
         }
 
         String methodName = getAnnotation(method, Around.class);
-        buildAspectJBeanDefinition(clazz, method, methodName, AspectJAfterAdvice.class, list, beanNameStrategy);
+        buildAspectJBeanDefinition(clazz, method, methodName, AspectJAroundAdvice.class, list, beanNameStrategy);
     }
 
     private void buildAspectAfterBeanDefinition(Class<?> clazz,

@@ -20,12 +20,12 @@ public class AutoProxyAdvisor {
 
     }
 
-    @Before("before()")
+//    @Before("before()")
     public void before(JoinPoint joinPoint) throws Throwable {
         System.out.println("before");
     }
 
-    @After("after()")
+//    @After("after()")
     public void after(JoinPoint joinPoint) throws Throwable {
         System.out.println("after");
     }
