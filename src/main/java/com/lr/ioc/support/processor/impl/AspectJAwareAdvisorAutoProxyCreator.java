@@ -4,6 +4,7 @@ package com.lr.ioc.support.processor.impl;
  * 自动创建代理类
  */
 
+import com.lr.ioc.annotation.Aspect;
 import com.lr.ioc.annotation.Configuration;
 import com.lr.ioc.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import com.lr.ioc.aop.proxy.ProxyFactory;
@@ -44,6 +45,12 @@ public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor, B
             return bean;
         }
 
+        //
+        // 有@{link @Aspect}注解不需要代理, 比如{@link AspectJAroundAdvice}实现了@Around注解中需要原始的类
+        if (bean.getClass().isAnnotationPresent(Aspect.class)) {
+            return bean;
+        }
+
         // 以上的类型都放过，只对普通的类进行代理
 
         /**
@@ -66,6 +73,7 @@ public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor, B
                 TargetSource targetSource = new TargetSource(bean, bean.getClass(), bean.getClass().getInterfaces());
                 advisedSupport.setTargetSource(targetSource);
 
+                // FIXME:解决一个类多个切面的问题(@Before,@Around,@After)
                 return advisedSupport.getProxy();
             }
         }

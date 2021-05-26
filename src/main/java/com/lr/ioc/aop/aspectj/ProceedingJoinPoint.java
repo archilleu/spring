@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.aopalliance.intercept.MethodInvocation;
 
 @Getter
-public class ProceedingJoinPoint {
+public class ProceedingJoinPoint extends JoinPoint {
 
     private MethodInvocation method;
 
