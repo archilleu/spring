@@ -20,12 +20,12 @@ public class AutoProxyAdvisor {
 
     }
 
-//    @Before("before()")
+    @Before("before()")
     public void before(JoinPoint joinPoint) throws Throwable {
         System.out.println("before");
     }
 
-//    @After("after()")
+    @After("after()")
     public void after(JoinPoint joinPoint) throws Throwable {
         System.out.println("after");
     }
@@ -35,6 +35,7 @@ public class AutoProxyAdvisor {
         long time = System.nanoTime();
         System.out.println("Invocation ot method " + proceedingJoinPoint.getMethod() + " start!");
         Object proceed = proceedingJoinPoint.proceed();
+        System.out.println("around:" + proceed);
         System.out.println("Invocation ot method " + proceedingJoinPoint.getMethod() + " end! takes "
                 + (System.nanoTime() - time) + " nanoseconds");
         return proceed;

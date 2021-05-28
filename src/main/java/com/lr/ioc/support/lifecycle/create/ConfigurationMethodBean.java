@@ -30,7 +30,7 @@ public class ConfigurationMethodBean extends AbstractNewInstanceBean {
         Class<?> clazz = configurationInstance.getClass();
         String methodName = beanDefinition.getConfigurationBeanMethod();
         Method method = ClassUtils.getMethod(clazz, methodName);
-        Object instance = ClassUtils.invokeMethod(configurationInstance, method, null);
+        Object instance = ClassUtils.invokeMethod(configurationInstance, method);
         return instance;
     }
 }

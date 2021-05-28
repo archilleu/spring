@@ -16,4 +16,5 @@ public interface BeanNameStrategy {
      */
     String generateBeanName(BeanDefinition beanDefinition);
 
+    String generateBeanNameByClass(Class<?> clazz);
 }

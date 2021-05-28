@@ -66,9 +66,9 @@ public class ClassUtils {
         return null;
     }
 
-    public static Method getMethod(final Class<?> clazz, String methodName) {
+    public static Method getMethod(final Class<?> clazz, String methodName, Class<?>... args) {
         try {
-            return clazz.getMethod(methodName);
+            return clazz.getMethod(methodName, args);
         } catch (NoSuchMethodException e) {
             throw new IocRuntimeException(e);
         }
@@ -95,7 +95,7 @@ public class ClassUtils {
 
         // 2. 反射调用
         try {
-            return factoryMethod.invoke(null, null);
+            return factoryMethod.invoke(null);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IocRuntimeException(e);
         }

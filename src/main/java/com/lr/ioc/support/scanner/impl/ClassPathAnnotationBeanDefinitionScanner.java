@@ -1,7 +1,8 @@
 package com.lr.ioc.support.scanner.impl;
 
 import com.lr.ioc.annotation.*;
-import com.lr.ioc.aop.aspectj.*;
+import com.lr.ioc.aop.aspectj.AbstractAspectJAdvice;
+import com.lr.ioc.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.PropertyValue;
 import com.lr.ioc.beans.PropertyValues;
@@ -17,6 +18,7 @@ import com.lr.ioc.support.scanner.BeanDefinitionScannerContext;
 import com.lr.ioc.util.ClassAnnotationTypeMetadata;
 import com.lr.ioc.util.ClassUtils;
 import lombok.Data;
+import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -193,57 +195,28 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
          */
 
         Method[] methods = clazz.getMethods();
+        int aopType;
+        Annotation annotation;
         for (Method method : methods) {
-            // @Before注解处理
-            buildAspectBeforeBeanDefinition(clazz, method, list, beanNameStrategy);
-
-            // @Around注解处理
-            buildAspectAroundBeanDefinition(clazz, method, list, beanNameStrategy);
-
-            // @After注解处理
-            buildAspectAfterBeanDefinition(clazz, method, list, beanNameStrategy);
+            if (method.isAnnotationPresent(Before.class)) {
+                annotation = method.getAnnotation(Before.class);
+                aopType = AOP_TYPE_BEFORE;
+            } else if (method.isAnnotationPresent(Around.class)) {
+                annotation = method.getAnnotation(Around.class);
+                aopType = AOP_TYPE_AROUND;
+            } else if (method.isAnnotationPresent(After.class)) {
+                annotation = method.getAnnotation(After.class);
+                aopType = AOP_TYPE_AFTER;
+            } else {
+                continue;
+            }
+            String methodName = getAnnotation(annotation);
+            buildAspectJBeanDefinition(clazz, method, methodName, aopType, list, beanNameStrategy);
         }
-    }
-
-    private void buildAspectBeforeBeanDefinition(Class<?> clazz,
-                                                 Method method,
-                                                 List<BeanDefinition> list,
-                                                 BeanNameStrategy beanNameStrategy) {
-        if (!method.isAnnotationPresent(Before.class)) {
-            return;
-        }
-
-        String methodName = getAnnotation(method, Before.class);
-        buildAspectJBeanDefinition(clazz, method, methodName, AspectJBeforeAdvice.class, list, beanNameStrategy);
-    }
-
-    private void buildAspectAroundBeanDefinition(Class<?> clazz,
-                                                 Method method,
-                                                 List<BeanDefinition> list,
-                                                 BeanNameStrategy beanNameStrategy) {
-        if (!method.isAnnotationPresent(Around.class)) {
-            return;
-        }
-
-        String methodName = getAnnotation(method, Around.class);
-        buildAspectJBeanDefinition(clazz, method, methodName, AspectJAroundAdvice.class, list, beanNameStrategy);
-    }
-
-    private void buildAspectAfterBeanDefinition(Class<?> clazz,
-                                                Method method,
-                                                List<BeanDefinition> list,
-                                                BeanNameStrategy beanNameStrategy) {
-        if (!method.isAnnotationPresent(After.class)) {
-            return;
-        }
-
-        String methodName = getAnnotation(method, After.class);
-        buildAspectJBeanDefinition(clazz, method, methodName, AspectJAfterAdvice.class, list, beanNameStrategy);
     }
 
     // 获取@Before，@Around，@After的value值
-    private String getAnnotation(Method method, Class<? extends Annotation> annotationClass) {
-        Annotation annotation = method.getAnnotation(annotationClass);
+    private String getAnnotation(Annotation annotation) {
         InvocationHandler h = Proxy.getInvocationHandler(annotation);
         try {
             Field field = h.getClass().getDeclaredField("memberValues");
@@ -264,7 +237,7 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
     private void buildAspectJBeanDefinition(Class<?> aopClazz,
                                             Method aopMethod,
                                             String pointcutName,
-                                            Class<? extends AbstractAspectJAdvice> aspectJClass,
+                                            int aopType,
                                             List<BeanDefinition> list,
                                             BeanNameStrategy beanNameStrategy) {
         // 1.检查pointcutName方法，是否标注了@Pointcut
@@ -279,35 +252,103 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
         }
 
         // 2.AOP对象
-        BeanDefinition beanDefinition = new BeanDefinition();
-        beanDefinition.setBeanClassName(aopClazz.getName());
-        beanDefinition.setSourceType(BeanSourceType.AOP);
-        String aopId = beanNameStrategy.generateBeanName(beanDefinition) + "#" + aopMethod.getName();
-        beanDefinition.setId(aopId);
-        list.add(beanDefinition);
+
+        String aopId = beanNameStrategy.generateBeanNameByClass(aopClazz);
+        BeanDefinition beanDefinition = findAopDefinition(list, aopId);
+        if (null == beanDefinition) {
+            beanDefinition = new BeanDefinition();
+            beanDefinition.setBeanClassName(aopClazz.getName());
+            beanDefinition.setId(aopId);
+            beanDefinition.setSourceType(BeanSourceType.AOP);
+            list.add(beanDefinition);
+        } else {
+            // 只创建一次就好了
+        }
 
         // 3.构建AspectJExpressionPointcutAdvisor对象定义
-        beanDefinition = new BeanDefinition();
-        beanDefinition.setBeanClassName(AspectJExpressionPointcutAdvisor.class.getName());
-        beanDefinition.setSourceType(BeanSourceType.AOP);
-        beanDefinition.setId(AspectJExpressionPointcutAdvisor.class.getSimpleName() + "#" + aopId);
+        String pointcutAdvisorId = beanNameStrategy.generateBeanNameByClass(AspectJExpressionPointcutAdvisor.class);
+        beanDefinition = findAopDefinition(list, pointcutAdvisorId);
+        if (null == beanDefinition) {
+            beanDefinition = new BeanDefinition();
+            beanDefinition.setBeanClassName(AspectJExpressionPointcutAdvisor.class.getName());
+            beanDefinition.setSourceType(BeanSourceType.AOP);
+            beanDefinition.setId(pointcutAdvisorId);
 
-        PropertyValues propertyValues = new PropertyValues();
+            PropertyValues propertyValues = new PropertyValues();
+            AbstractAspectJAdvice abstractAspectJAdvice = new AbstractAspectJAdvice();
+            abstractAspectJAdvice.setBeanFactory(beanFactory);
+            abstractAspectJAdvice.setAspectInstanceName(aopId);
+            Method invoke = null;
+            try {
+                invoke = AbstractAspectJAdvice.class.getMethod("invoke", MethodInvocation.class);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+            abstractAspectJAdvice.setAspectJAdviceMethod(invoke);
+            switch (aopType) {
+                case 1:
+                    abstractAspectJAdvice.setAspectJAdviceMethodBefore(aopMethod);
+                    break;
+                case 2:
+                    abstractAspectJAdvice.setAspectJAdviceMethodAround(aopMethod);
+                    break;
+                case 3:
+                    abstractAspectJAdvice.setAspectJAdviceMethodAfter(aopMethod);
+                    break;
 
-        AbstractAspectJAdvice aspectJAroundAdvice = null;
-        try {
-            aspectJAroundAdvice = (AbstractAspectJAdvice) aspectJClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IocRuntimeException(e);
+                default:
+                    throw new IocRuntimeException("aa");
+            }
+            propertyValues.addPropertyValue(new PropertyValue("advice", abstractAspectJAdvice));
+            propertyValues.addPropertyValue(new PropertyValue("expression", expression));
+            beanDefinition.setPropertyValues(propertyValues);
+            list.add(beanDefinition);
+        } else {
+            // 修改切面
+            AbstractAspectJAdvice abstractAspectJAdvice = null;
+            for (PropertyValue propertyValue : beanDefinition.getPropertyValues().getPropertyValues()) {
+                if (propertyValue.getName().equals("advice")) {
+                    abstractAspectJAdvice = (AbstractAspectJAdvice) propertyValue.getValue();
+                    break;
+                }
+            }
+            switch (aopType) {
+                case 1:
+                    abstractAspectJAdvice.setAspectJAdviceMethodBefore(aopMethod);
+                    break;
+                case 2:
+                    abstractAspectJAdvice.setAspectJAdviceMethodAround(aopMethod);
+                    break;
+                case 3:
+                    abstractAspectJAdvice.setAspectJAdviceMethodAfter(aopMethod);
+                    break;
+
+                default:
+                    throw new IocRuntimeException("aa");
+            }
         }
-        aspectJAroundAdvice.setBeanFactory(beanFactory);
-        aspectJAroundAdvice.setAspectInstanceName(aopId);
-        aspectJAroundAdvice.setAspectJAdviceMethod(aopMethod);
-        propertyValues.addPropertyValue(new PropertyValue("advice", aspectJAroundAdvice));
-        propertyValues.addPropertyValue(new PropertyValue("expression", expression));
-        beanDefinition.setPropertyValues(propertyValues);
-        list.add(beanDefinition);
 
         return;
     }
+
+    /**
+     * 查找@AspectJ是否已经生成了Bean Definition，一个@AspectJ只生成一份定义
+     *
+     * @param list
+     * @param id
+     * @return
+     */
+    private BeanDefinition findAopDefinition(List<BeanDefinition> list, String id) {
+        for (BeanDefinition beanDefinition : list) {
+            if (beanDefinition.getId().equals(id)) {
+                return beanDefinition;
+            }
+        }
+
+        return null;
+    }
+
+    private final static int AOP_TYPE_BEFORE = 1;
+    private final static int AOP_TYPE_AROUND = 2;
+    private final static int AOP_TYPE_AFTER = 3;
 }

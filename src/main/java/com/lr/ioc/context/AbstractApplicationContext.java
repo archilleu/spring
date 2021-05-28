@@ -1,5 +1,6 @@
 package com.lr.ioc.context;
 
+import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
 import com.lr.ioc.exception.IocRuntimeException;
 import com.lr.ioc.support.processor.BeanPostProcessor;

@@ -98,7 +98,7 @@ public class AbstractBeanFactory implements BeanFactory {
     }
 
     @Override
-    public boolean isTypeMatch(final String name, final Class type) {
+    public boolean isTypeMatch(final String name, final Class<?> type) {
         Class<?> beanType = getType(name);
         return beanType.equals(type);
     }
@@ -109,9 +109,6 @@ public class AbstractBeanFactory implements BeanFactory {
         return bean.getClass();
     }
 
-    public Set<String> getBeanNames(final Class type) {
-        return typeBeanNameMap.get(type);
-    }
 
     protected Object doCreateBean(BeanDefinition beanDefinition) {
         Object bean = createBeanInstance(beanDefinition);
@@ -214,5 +211,9 @@ public class AbstractBeanFactory implements BeanFactory {
         }
 
         return null;
+    }
+
+    private Set<String> getBeanNames(final Class<?> type) {
+        return typeBeanNameMap.get(type);
     }
 }

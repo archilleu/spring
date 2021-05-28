@@ -57,7 +57,7 @@ public interface BeanFactory {
      * @param type
      * @return
      */
-    boolean isTypeMatch(final String name, final Class type);
+    boolean isTypeMatch(final String name, final Class<?> type);
 
     /**
      * 获取bean类型

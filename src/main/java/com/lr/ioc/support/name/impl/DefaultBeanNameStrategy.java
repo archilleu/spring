@@ -25,4 +25,12 @@ public class DefaultBeanNameStrategy implements BeanNameStrategy {
         id = Character.toLowerCase(className.charAt(0)) + className.substring(1);
         return id;
     }
+
+    @Override
+    public String generateBeanNameByClass(Class<?> clazz) {
+        String className = clazz.getSimpleName()
+                .substring(clazz.getSimpleName().lastIndexOf(".") + 1);
+        return Character.toLowerCase(className.charAt(0)) + className.substring(1);
+    }
+
 }
