@@ -68,7 +68,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             return new LinkedList<>();
         }
 
-        ComponentScan componentScan =  clazz.getAnnotation(ComponentScan.class);
+        ComponentScan componentScan = clazz.getAnnotation(ComponentScan.class);
 
         DefaultBeanDefinitionScannerContext context = new DefaultBeanDefinitionScannerContext();
         if (componentScan.value().length == 0) {
@@ -142,6 +142,10 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         beanDefinition.setSourceType(BeanSourceType.CONFIGURATION);
         if (clazz.isAnnotationPresent(Primary.class)) {
             beanDefinition.setPrimary(true);
+        }
+
+        if (clazz.isAnnotationPresent(Order.class)) {
+            beanDefinition.setOrder(clazz.getAnnotation(Order.class).value());
         }
 
         return beanDefinition;

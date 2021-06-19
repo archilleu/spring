@@ -1,5 +1,6 @@
 package com.lr.ioc.beans.factory;
 
+import com.lr.ioc.annotation.Order;
 import com.lr.ioc.annotation.Primary;
 import com.lr.ioc.beans.BeanDefinition;
 import com.lr.ioc.constant.ScopeConst;
@@ -65,6 +66,23 @@ public class AbstractBeanFactory implements BeanFactory {
         }
 
         names.forEach((name) -> list.add(getBean(name, type)));
+        //排序
+        list.sort((Object left, Object right) -> {
+            int orderLeft = 0;
+            int orderRight = 0;
+            Class<?> classLeft = left.getClass();
+            Class<?> classRight = right.getClass();
+            if (classLeft.isAnnotationPresent(Order.class)) {
+                orderLeft = classLeft.getAnnotation(Order.class).value();
+            }
+            if (classRight.isAnnotationPresent(Order.class)) {
+                orderRight = classRight.getAnnotation(Order.class).value();
+            }
+
+            // 倒序
+            return (orderRight - orderLeft);
+        });
+
         return list;
     }
 

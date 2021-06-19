@@ -68,6 +68,7 @@ public class BeanDefinition {
     private String configurationName;
     private String configurationBeanMethod;
     private boolean primary;
+    private Integer order;
 
     /**
      * 对象工厂方法(必须静态、无参、返回对象)
@@ -76,8 +77,6 @@ public class BeanDefinition {
 
     /**
      * 构造器列表
-     *
-     * @since 0.0.6
      */
     private List<ConstructorArgDefinition> constructorArgList;
 

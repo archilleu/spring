@@ -2,6 +2,7 @@ package com.lr.ioc.support.processor.impl;
 
 import com.lr.ioc.annotation.Autowired;
 import com.lr.ioc.annotation.Configuration;
+import com.lr.ioc.annotation.Order;
 import com.lr.ioc.beans.factory.BeanFactory;
 import com.lr.ioc.exception.IocRuntimeException;
 import com.lr.ioc.support.aware.BeanFactoryAware;
@@ -11,6 +12,7 @@ import com.lr.ioc.util.ClassUtils;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
+@Order(Integer.MAX_VALUE)
 @Configuration
 public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 

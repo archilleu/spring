@@ -19,7 +19,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 
 import java.util.List;
 
-@Order("1000")
+@Order(Integer.MAX_VALUE - 100)
 @Configuration
 public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor, BeanFactoryAware {
 

@@ -12,6 +12,6 @@ public @interface Order {
      *
      * @return 组件名称
      */
-    String value() default "";
+    int value() default 0;
 
 }

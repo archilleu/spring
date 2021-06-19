@@ -3,8 +3,6 @@ package com.lr.ioc.context;
 import com.lr.ioc.beans.factory.AbstractBeanFactory;
 import com.lr.ioc.exception.IocRuntimeException;
 import com.lr.ioc.support.processor.BeanPostProcessor;
-import com.lr.ioc.support.processor.impl.AspectJAwareAdvisorAutoProxyCreator;
-import com.lr.ioc.support.processor.impl.AutowiredAnnotationBeanPostProcessor;
 
 import java.util.List;
 
@@ -30,18 +28,10 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     protected abstract void loadBeanDefinitions(AbstractBeanFactory beanFactory);
 
     protected void registerBeanPostProcessors(AbstractBeanFactory beanFactory) {
-        // FIXME: 使用@Order添加顺序
         List<BeanPostProcessor> beanPostProcessors = beanFactory.getBeans(BeanPostProcessor.class);
-        for (Object beanPostProcessor : beanPostProcessors) {
-            if (beanPostProcessor instanceof AutowiredAnnotationBeanPostProcessor) {
-                beanFactory.addBeanPostProcessor((BeanPostProcessor) beanPostProcessor);
-            }
-        }
-        for (Object beanPostProcessor : beanPostProcessors) {
-            if (beanPostProcessor instanceof AspectJAwareAdvisorAutoProxyCreator) {
-                beanFactory.addBeanPostProcessor((BeanPostProcessor) beanPostProcessor);
-            }
-        }
+        beanPostProcessors.forEach((beanPostProcessor) -> {
+            beanFactory.addBeanPostProcessor(beanPostProcessor);
+        });
     }
 
     protected void onRefresh() {
