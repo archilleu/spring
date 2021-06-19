@@ -59,7 +59,6 @@ public class AnnotationApplicationContextTest {
     public void autowiredPrimaryTest() {
         ApplicationContext applicationContext = new AnnotationApplicationContext(AppAutowiredPrimaryConfig.class);
 
-
         AppAutowiredPrimaryConfig appAutowiredPrimaryConfig = applicationContext.getBean("appAutowiredPrimaryConfig", AppAutowiredPrimaryConfig.class);
         BeanService beanService = appAutowiredPrimaryConfig.getBeanService();
         Assert.assertTrue(beanService instanceof BeanServiceImpl);

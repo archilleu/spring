@@ -81,7 +81,6 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
         return beanDefinitionList;
     }
 
-
     private Set<String> scanPackageClassNameSet(final String packageName) {
         Set<String> classNameSet = new HashSet<>();
 
@@ -146,7 +145,6 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
                 && null == typeMetadata.isAnnotatedOrMeta(excludes)) {
             return true;
         }
-
 
         return false;
     }
@@ -286,18 +284,18 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
             }
             abstractAspectJAdvice.setAspectJAdviceMethod(invoke);
             switch (aopType) {
-                case 1:
+                case AOP_TYPE_BEFORE:
                     abstractAspectJAdvice.setAspectJAdviceMethodBefore(aopMethod);
                     break;
-                case 2:
+                case AOP_TYPE_AROUND:
                     abstractAspectJAdvice.setAspectJAdviceMethodAround(aopMethod);
                     break;
-                case 3:
+                case AOP_TYPE_AFTER:
                     abstractAspectJAdvice.setAspectJAdviceMethodAfter(aopMethod);
                     break;
 
                 default:
-                    throw new IocRuntimeException("aa");
+                    throw new IocRuntimeException("Aop type error!");
             }
             propertyValues.addPropertyValue(new PropertyValue("advice", abstractAspectJAdvice));
             propertyValues.addPropertyValue(new PropertyValue("expression", expression));
@@ -313,18 +311,18 @@ public class ClassPathAnnotationBeanDefinitionScanner implements AnnotationBeanD
                 }
             }
             switch (aopType) {
-                case 1:
+                case AOP_TYPE_BEFORE:
                     abstractAspectJAdvice.setAspectJAdviceMethodBefore(aopMethod);
                     break;
-                case 2:
+                case AOP_TYPE_AROUND:
                     abstractAspectJAdvice.setAspectJAdviceMethodAround(aopMethod);
                     break;
-                case 3:
+                case AOP_TYPE_AFTER:
                     abstractAspectJAdvice.setAspectJAdviceMethodAfter(aopMethod);
                     break;
 
                 default:
-                    throw new IocRuntimeException("aa");
+                    throw new IocRuntimeException("Aop type error!");
             }
         }
 

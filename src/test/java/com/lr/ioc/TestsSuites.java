@@ -7,6 +7,7 @@ import com.lr.ioc.beans.factory.AbstractBeanFactoryTest;
 import com.lr.ioc.beans.factory.BeanFactoryTest;
 import com.lr.ioc.beans.json.JsonBeanDefinitionReaderTest;
 import com.lr.ioc.beans.scan.ScanApplication;
+import com.lr.ioc.context.AnnotationApplicationContextTest;
 import com.lr.ioc.context.ApplicationContextTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -15,6 +16,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         ScanApplication.class,
         ApplicationContextTest.class,
+        AnnotationApplicationContextTest.class,
         AspectJExpressionPointcutTest.class,
         Cglib2AopProxyTest.class,
         JdkDynamicAopProxyTest.class,

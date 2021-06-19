@@ -68,7 +68,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             return new LinkedList<>();
         }
 
-        ComponentScan componentScan = (ComponentScan) clazz.getAnnotation(ComponentScan.class);
+        ComponentScan componentScan =  clazz.getAnnotation(ComponentScan.class);
 
         DefaultBeanDefinitionScannerContext context = new DefaultBeanDefinitionScannerContext();
         if (componentScan.value().length == 0) {

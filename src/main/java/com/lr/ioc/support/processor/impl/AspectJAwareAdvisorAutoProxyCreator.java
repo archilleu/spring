@@ -6,6 +6,7 @@ package com.lr.ioc.support.processor.impl;
 
 import com.lr.ioc.annotation.Aspect;
 import com.lr.ioc.annotation.Configuration;
+import com.lr.ioc.annotation.Order;
 import com.lr.ioc.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import com.lr.ioc.aop.proxy.ProxyFactory;
 import com.lr.ioc.aop.proxy.TargetSource;
@@ -18,6 +19,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 
 import java.util.List;
 
+@Order("1000")
 @Configuration
 public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor, BeanFactoryAware {
 
